@@ -1,88 +1,40 @@
 ﻿namespace PragueParking_2._0
 {
-    internal class Vehicle : ParkingSpot
+    public class Vehicle
     {
-        private string? regNumber;
-        private string? typeOfVehicle;
-        private double rate;
-        private double space;
-        private double parkingCost = 0;
-
-        public string? RegNumber { get; set; }
-        public string? TypeOfVehicle { get; set; }
-        public double Rate { get; set; }
-        public double Space { get; set; }
-        public double ParkingCost { get; set; }
+        private string _regPlate;
+        private string _vehicleType;
+        private int _vehicleSize;
 
         public Vehicle()
         {
-            this.regNumber = RegNumber;
-            this.typeOfVehicle = TypeOfVehicle;
-            this.rate = Rate;
-            this.space = Space;
-            //this.parkingCost = ParkingCost;
+            this._regPlate = regPlate;
+            this._vehicleType = vehicleType;
+            this._vehicleSize = vehicleSize;
         }
 
-        public override void ParkVehicle()
-        {
-            base.ParkVehicle();
-        }
-        public static DateTime ParkingStart() //Should this be in ParkingSpot/Garage instead?
-        {
-            DateTime start = DateTime.Now;
-            return start;
-        }
+        public string regPlate { get; set; }
+        public string vehicleType { get; set; }
+        public int vehicleSize { get; set; }
+    }
 
-        public void ParkingEnd() //Should this be in ParkingSpot/Garage instead?
+    public class MC : Vehicle
+    {
+        public MC(string mcPlate)
         {
-
-        }
-
-        public virtual void CalculateSpace(double space)
-        {
-
-        }
-
-        public double CalculateParkingCost(double space, double rate) //Should this be in ParkingSpot/Garage instead?
-        {
-            ParkingCost = space * rate;
-            return ParkingCost;
+            this.regPlate = mcPlate;
+            this.vehicleType = "MC";
+            this.vehicleSize = 2;
         }
     }
 
-    class Car : Vehicle
+    public class Car : Vehicle
     {
-        public Car(string regNumber)
+        public Car(string carPlate)
         {
-            base.RegNumber = regNumber;
-            base.TypeOfVehicle = "car";
-            base.Rate = 20;
-            base.Space = 1;
-            //base.ParkingCost = base.CalculateParkingCost(base.space, rate);
-            ParkingStart();
-        }
-
-        public void ParkCar()
-        {
-            Console.WriteLine($"Car with reg: {RegNumber} is parked");
-        }
-    }
-
-    class MC : Vehicle
-    {
-        public MC(string regNumber)
-        {
-            base.RegNumber = regNumber;
-            base.TypeOfVehicle = "mc";
-            base.Rate = 20;
-            base.Space = 1;
-            //base.ParkingCost = base.CalculateParkingCost(base.space, rate);
-            ParkingStart();
-        }
-
-        public void ParkMC()
-        {
-            Console.WriteLine($"MC with reg: {RegNumber} is parked");
+            this.regPlate = carPlate;
+            this.vehicleType = "CAR";
+            this.vehicleSize = 4;
         }
     }
 }

@@ -2,27 +2,11 @@
 
 internal class Program
 {
-    private static void Main()
+    private static void Main(string[] args)
     {
-        //Initialize garage with parking spaces
-        //Garage.InitGarage();
+        Garage myPark = new Garage();
+        myPark.createParking();
 
-        ////Create car and park
-        //Car one = new Car("ABC123");
-        //one.ParkCar();
-
-        ////Create mc and park
-        //MC mc = new MC("QWE123");
-        //mc.ParkMC();
-
-
-        ////Test print to console
-        //Console.WriteLine(one.Space);   
-        //Console.WriteLine(one.TypeOfVehicle);
-        //Console.WriteLine(one.Rate);
-        //Console.WriteLine(one.RegNumber);
-
-        //Meny
         int menu = 0;
         do
         {
@@ -69,18 +53,38 @@ internal class Program
             Console.Write("Type in the registration plate of the vehicle in question: ");
             if (chosenVehicleType == 1)
             {
-                Car automobile = new Car(Console.ReadLine());
-                automobile.ParkCar();
-                
+                Car myCar = new Car(Console.ReadLine());
+                string myCarData = myCar.vehicleType + "#" + myCar.regPlate;
+
+                ParkingSpot mySpot = new ParkingSpot();
+                mySpot.vehicleData = myCarData;
+
+                Console.Clear();
+
+                Console.Write("Type in the number of the parking spot that you'd like to park your car at: ");
+                mySpot.parkToNumber = Console.ReadLine();
+
+                myPark.addToParking(mySpot.vehicleData, mySpot.parkToNumber);
+
                 Console.Write("\n\nPress random key to continue...");
                 Console.ReadKey();
                 return;
-            }            
+            }
             else if (chosenVehicleType == 2)
             {
-                MC motorcycle = new MC(Console.ReadLine());
-                motorcycle.ParkMC();
-                
+                MC myMC = new MC(Console.ReadLine());
+                string myMCData = myMC.vehicleType + "#" + myMC.regPlate;
+
+                ParkingSpot mySpot = new ParkingSpot();
+                mySpot.vehicleData = myMCData;
+
+                Console.Clear();
+
+                Console.Write("Type in the number of the parking spot that you'd like to park your car at: ");
+                mySpot.parkToNumber = Console.ReadLine();
+
+                myPark.addToParking(mySpot.vehicleData, mySpot.parkToNumber);
+
                 Console.Write("\n\nPress random key to continue...");
                 Console.ReadKey();
                 return;
@@ -96,6 +100,9 @@ internal class Program
         void showParking()
         {
             Console.Clear();
+
+            //Problem: Det skappas flera listor när man använder metoden flera gånger
+            myPark.printParking();
 
             Console.Write("\n\nPress random key to continue...");
             Console.ReadKey();

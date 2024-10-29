@@ -1,21 +1,17 @@
 ﻿namespace PragueParking_2._0
 {
-    internal class ParkingSpot : Garage
+    public class ParkingSpot
     {
-        private int _id;
-        private bool occupied;
+        protected string _vehicleData;
+        protected string _parkToNumber;
 
-        public int ID { get; set; }
-        public bool Occupied { get; set; }
         public ParkingSpot()
         {
-            this._id = ID;
-            this.occupied = Occupied;
+            this._vehicleData = vehicleData;
+            this._parkToNumber = parkToNumber;
         }
 
-        public virtual void ParkVehicle()
-        {
-            Console.WriteLine("The vehicle is now parked");
-        }
+        public string vehicleData { get; set; }
+        public string parkToNumber { get; set; }
     }
 }

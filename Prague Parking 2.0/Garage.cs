@@ -1,35 +1,37 @@
 ﻿namespace PragueParking_2._0
 {
-    internal class Garage
+    public class Garage : ParkingSpot
     {
-        private int capacity = 100;
-        public List<ParkingSpot> garageList = [];
+        public int listSize = 101;
+        public List<string> parkingList = new List<string>();
 
-        public ParkingSpot? GarageList { get; set; }
-
-        public static void InitGarage() //Creates a garage
+        public void createParking()
         {
-            Garage garageList = new Garage();
-            garageList.InitializeGarage();
-            garageList.PrintGarage();
-        }
-
-        public void InitializeGarage() //Adds ParkingSpots to garage
-        {
-            for (int i = 0; i < capacity; i++)
+            for (int i = 1; i < listSize; i++)
             {
-                garageList.Add(new ParkingSpot());
-                garageList[i].ID = i;
-                garageList[i].Occupied = false;
+                string parkingNumber = i.ToString();
+                parkingList.Add(parkingNumber);
             }
         }
 
-        public void PrintGarage()   //Prints each ParkingSpot to console
+        public void addToParking(string vehicleInfo, string moveTo)
         {
-            foreach (ParkingSpot spot in garageList)
+            for (int i = 1; i < listSize; i++)
             {
-                Console.WriteLine(spot.ID + " " + spot.Occupied);
+                int index = parkingList.FindIndex(s => s == moveTo);
+
+                if (index != -1)
+                {
+                    parkingList[index] = vehicleInfo;
+
+                    Console.WriteLine("{0} has been placed at parking spot {1}", vehicleInfo, moveTo);
+                }
             }
+        }
+
+        public void printParking()
+        {
+            parkingList.ForEach(Console.WriteLine);
         }
     }
 }
