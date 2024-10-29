@@ -2,21 +2,21 @@
 {
     public class Garage : ParkingSpot
     {
-        public int listSize = 101;
-        public List<string> parkingList = new List<string>();
+        private static int listSize = 100;
+        private List<string> parkingList = new List<string>();
 
         public void createParking()
         {
-            for (int i = 1; i < listSize; i++)
+            for (int i = 0; i < listSize; i++)
             {
-                string parkingNumber = i.ToString();
-                parkingList.Add(parkingNumber);
+                int parkingNumber = i + 1;
+                parkingList.Add(parkingNumber.ToString());
             }
         }
 
         public void addToParking(string vehicleInfo, string moveTo)
         {
-            for (int i = 1; i < listSize; i++)
+            for (int i = 0; i < listSize; i++)
             {
                 int index = parkingList.FindIndex(s => s == moveTo);
 
@@ -33,7 +33,7 @@
 
         public void removeFromParking(string vehicleInfo)
         {
-            for (int i = 1; i < listSize; i++)
+            for (int i = 0; i < listSize; i++)
             {
                 if (parkingList[i] == vehicleInfo)
                 {
@@ -47,9 +47,56 @@
             Console.WriteLine("{0} couldn't be found in any of the parking spots", vehicleInfo);
         }
 
+        public void moveParking()
+        {
+
+        }
+
+        public void searchForParking(string vehicleInfo)
+        {
+            for (int i = 0; i < listSize; i++)
+            {
+                if (parkingList[i] == vehicleInfo)
+                {
+                    int vehicleNumber = i + 1;
+
+                    Console.WriteLine("{0} was found at parking spot {1}", vehicleInfo, vehicleNumber);
+                    return;
+                }
+            }
+            Console.WriteLine("{0} couldn't be found in any of the parking spots", vehicleInfo);
+        }
+
         public void printParking()
         {
-            parkingList.ForEach(Console.WriteLine);
+            for (int i = 0; i < listSize;i++)
+            {
+                string splitString = parkingList[i];
+                int searchVehicle = splitString.IndexOf('#');
+                int searchSeperator = splitString.IndexOf('|');
+                int searchMC = splitString.IndexOf("MC");
+
+                if (searchVehicle != -1)
+                {
+                    if (searchMC != -1 && searchSeperator == -1)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine(parkingList[i]);
+                        Console.ResetColor();
+                        continue;
+                    }
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine(parkingList[i]);
+                    Console.ResetColor();
+                }
+                else if (searchVehicle == -1)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine(parkingList[i]);
+                    Console.ResetColor();
+                }
+            }
         }
     }
 }

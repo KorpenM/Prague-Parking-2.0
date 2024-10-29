@@ -17,7 +17,9 @@ internal class Program
             Console.WriteLine("\n\n[0] Exit Program");
             Console.WriteLine("[1] Park Vehicle");
             Console.WriteLine("[2] Remove Vehicle");
-            Console.WriteLine("[3] Show Parking");
+            Console.WriteLine("[3] Move Vehicle");
+            Console.WriteLine("[4] Search Vehicle");
+            Console.WriteLine("[5] Show Parking");
 
             Console.Write("\n\nType in the number of the corresponding function \nthat you'd like to use: ");
 
@@ -31,6 +33,12 @@ internal class Program
                     removeVehicle();
                     break;
                 case 3:
+                    moveVehicle();
+                    break;
+                case 4:
+                    searchVehicle();
+                    break;
+                case 5:
                     showParking();
                     break;
                 case 0:
@@ -130,6 +138,49 @@ internal class Program
             }
         }
 
+        void moveVehicle()
+        {
+
+        }
+
+        void searchVehicle()
+        {
+            Console.Clear();
+
+            Console.Write("What type of vehicle are you trying to look for? \n\n[1] Car \n[2] Motorcycle \n\nType in the number of the corresponding vehicle type: ");
+            int chosenVehicleType = int.Parse(Console.ReadLine());
+
+            Console.Clear();
+
+            Console.Write("Type in the registration plate of the vehicle in question: ");
+            if (chosenVehicleType == 1)
+            {
+                string regPlate = Console.ReadLine();
+                string myCarData = "CAR" + "#" + regPlate;
+
+                Console.Clear();
+
+                myPark.searchForParking(myCarData);
+
+                Console.Write("\n\nPress random key to continue...");
+                Console.ReadKey();
+                return;
+            }
+            else if (chosenVehicleType == 2)
+            {
+                string regPlate = Console.ReadLine();
+                string myMCData = "MC" + "#" + regPlate;
+
+                Console.Clear();
+
+                myPark.searchForParking(myMCData);
+
+                Console.Write("\n\nPress random key to continue...");
+                Console.ReadKey();
+                return;
+            }
+        }
+
         void showParking()
         {
             Console.Clear();
@@ -141,6 +192,5 @@ internal class Program
             Console.ReadKey();
             return;
         }
-
     }
 }
