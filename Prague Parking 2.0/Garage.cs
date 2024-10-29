@@ -26,9 +26,23 @@
 
         public void PrintGarage()   //Prints each ParkingSpot to console
         {
+            Console.Clear();
+            Console.WriteLine("=== Parking Spots ===\n");
+
             foreach (ParkingSpot spot in garageList)
             {
-                Console.WriteLine(spot.ID + " " + spot.Occupied);
+                if (spot.Occupied)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Parking Spot {spot.ID}: Occupied");
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"Parking Spot {spot.ID}: Available");
+                }
+                Console.ResetColor();
+               // Console.WriteLine(spot.ID + " " + spot.Occupied);
             }
         }
     }

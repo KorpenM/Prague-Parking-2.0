@@ -1,88 +1,122 @@
 ﻿namespace PragueParking_2._0
 {
+    public enum VehicleType
+    {
+        Bike = 1,
+        MC = 2,
+        Car = 4,
+        Bus = 16,
+    }
+
     internal class Vehicle : ParkingSpot
     {
         private string? regNumber;
-        private string? typeOfVehicle;
+        private DateTime parkingStartTime; // Tidpunkt för parkering
         private double rate;
         private double space;
-        private double parkingCost = 0;
 
         public string? RegNumber { get; set; }
-        public string? TypeOfVehicle { get; set; }
+        public VehicleType TypeOfVehicle { get; set; }
         public double Rate { get; set; }
         public double Space { get; set; }
-        public double ParkingCost { get; set; }
+        public double ParkingCost { get; private set; } // Kostnaden ska beräknas
 
-        public Vehicle()
+        // Konstruktor som tar emot regNumber och VehicleType
+        public Vehicle(string regNumber, VehicleType typeOfVehicle)
         {
-            this.regNumber = RegNumber;
-            this.typeOfVehicle = TypeOfVehicle;
-            this.rate = Rate;
-            this.space = Space;
-            //this.parkingCost = ParkingCost;
+            this.RegNumber = regNumber;
+            this.TypeOfVehicle = typeOfVehicle;
+            SetVehicleProperties(typeOfVehicle);
+            this.parkingStartTime = DateTime.Now; // Sätter starttiden för parkeringen
         }
 
-        public override void ParkVehicle()
+        private void SetVehicleProperties(VehicleType typeOfVehicle)
         {
-            base.ParkVehicle();
+            switch (typeOfVehicle)
+            {
+                case VehicleType.Bike:
+                    this.Rate = 5;
+                    this.Space = 1;
+                    break;
+                case VehicleType.MC:
+                    this.Rate = 10;
+                    this.Space = 2;
+                    break;
+                case VehicleType.Car:
+                    this.Rate = 20;
+                    this.Space = 4;
+                    break;
+                case VehicleType.Bus:
+                    this.Rate = 40;
+                    this.Space = 16;
+                    break;
+            }
         }
-        public static DateTime ParkingStart() //Should this be in ParkingSpot/Garage instead?
+
+        public double CalculateParkingCost()
         {
-            DateTime start = DateTime.Now;
-            return start;
-        }
+            TimeSpan parkedDuration = DateTime.Now - parkingStartTime; // Beräkna hur länge fordonet har varit parkerat
 
-        public void ParkingEnd() //Should this be in ParkingSpot/Garage instead?
-        {
+            // Kolla om parkeringsdurationen är mindre än eller lika med 10 minuter
+            if (parkedDuration.TotalMinutes <= 10)
+            {
+                return 0; // Gratis de första 10 minuterna
+            }
 
-        }
-
-        public virtual void CalculateSpace(double space)
-        {
-
-        }
-
-        public double CalculateParkingCost(double space, double rate) //Should this be in ParkingSpot/Garage instead?
-        {
-            ParkingCost = space * rate;
+            // Beräkna kostnaden baserat på den tid som överstiger 10 minuter
+            double chargeableMinutes = parkedDuration.TotalMinutes - 10; // Tid som debiteras
+            double cost = (chargeableMinutes / 60) * Rate; // Kostnaden för tiden i timmar
+            ParkingCost = Math.Round(cost, 2); // Avrunda kostnaden till två decimaler
             return ParkingCost;
+        }
+
+        public void ParkVehicle()
+        {
+            Console.WriteLine($"Vehicle with reg: {RegNumber} is parked.");
         }
     }
 
-    class Car : Vehicle
+    class Bike : Vehicle
     {
-        public Car(string regNumber)
-        {
-            base.RegNumber = regNumber;
-            base.TypeOfVehicle = "car";
-            base.Rate = 20;
-            base.Space = 1;
-            //base.ParkingCost = base.CalculateParkingCost(base.space, rate);
-            ParkingStart();
-        }
+        public Bike(string regNumber) : base(regNumber, VehicleType.Bike) { }
 
-        public void ParkCar()
+        public void ParkBike()
         {
-            Console.WriteLine($"Car with reg: {RegNumber} is parked");
+            ParkVehicle();
+            Console.WriteLine($"Bike with reg: {RegNumber} is parked.");
         }
     }
 
     class MC : Vehicle
     {
-        public MC(string regNumber)
-        {
-            base.RegNumber = regNumber;
-            base.TypeOfVehicle = "mc";
-            base.Rate = 20;
-            base.Space = 1;
-            //base.ParkingCost = base.CalculateParkingCost(base.space, rate);
-            ParkingStart();
-        }
+        public MC(string regNumber) : base(regNumber, VehicleType.MC) { }
 
         public void ParkMC()
         {
-            Console.WriteLine($"MC with reg: {RegNumber} is parked");
+            ParkVehicle();
+            Console.WriteLine($"MC with reg: {RegNumber} is parked.");
+        }
+    }
+
+    class Car : Vehicle
+    {
+        public Car(string regNumber) : base(regNumber, VehicleType.Car) { }
+
+        public void ParkCar()
+        {
+            ParkVehicle();
+            Console.WriteLine($"Car with reg: {RegNumber} is parked.");
+        }
+    }
+
+    class Bus : Vehicle
+    {
+        public Bus(string regNumber) : base(regNumber, VehicleType.Bus) { }
+
+        public void ParkBus()
+        {
+            ParkVehicle();
+            Console.WriteLine($"Bus with reg: {RegNumber} is parked.");
         }
     }
 }
