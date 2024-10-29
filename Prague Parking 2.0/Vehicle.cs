@@ -26,6 +26,7 @@
         public override void ParkVehicle()
         {
             base.ParkVehicle();
+            Console.WriteLine("ParkVehicle in class Vehicle");
         }
         public static DateTime ParkingStart() //Should this be in ParkingSpot/Garage instead?
         {
@@ -64,7 +65,9 @@
 
         public void ParkCar()
         {
-            Console.WriteLine($"Car with reg: {RegNumber} is parked");
+            //Console.WriteLine($"Car with reg: {RegNumber} is parked");
+            base.ParkVehicle();
+            Console.WriteLine($"Car with reg: {RegNumber} is parked, ParkVehicle in Car : Vehicle");
         }
     }
 
@@ -82,7 +85,7 @@
 
         public void ParkMC()
         {
-            Console.WriteLine($"MC with reg: {RegNumber} is parked");
+            base.ParkVehicle();
         }
     }
 }

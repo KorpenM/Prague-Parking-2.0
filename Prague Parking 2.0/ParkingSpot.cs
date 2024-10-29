@@ -15,7 +15,7 @@
 
         public virtual void ParkVehicle()
         {
-            Console.WriteLine("The vehicle is now parked");
+            Console.WriteLine("ParkVehicle in ParkingSPot");
         }
     }
 }
