@@ -14,7 +14,7 @@
         public VehicleType TypeOfVehicle { get; set; }
         public double Rate { get; set; }
         public double Space { get; set; }
-        public DateTime ParkingStartTime { get; set; } // Lägg till en egenskap för starttiden
+        public DateTime ParkingStartTime { get; set; }
 
         public Vehicle(string regNumber, VehicleType typeOfVehicle)
         {
@@ -72,5 +72,6 @@
     class Bus : Vehicle
     {
         public Bus(string regNumber) : base(regNumber, VehicleType.Bus) { }
+
     }
 }

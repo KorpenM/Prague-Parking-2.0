@@ -1,4 +1,6 @@
-﻿namespace PragueParking_2._0
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace PragueParking_2._0
 {
     internal class ParkingSpot
     {
@@ -15,5 +17,21 @@
         {
             Console.WriteLine("The vehicle is now parked");
         }
+
+        public bool CanAcceptVehicle(Vehicle vehicle)
+        {
+            if (ID < 50)
+            {
+                return true;
+            }
+            else
+            {
+                // Spots 51-100 (ID 50-99) can only accept Bike, MC and Car
+                return vehicle.TypeOfVehicle == VehicleType.Bike ||
+                       vehicle.TypeOfVehicle == VehicleType.MC ||
+                       vehicle.TypeOfVehicle == VehicleType.Car;
+            }
+        }
+
     }
 }

@@ -22,9 +22,10 @@ namespace PragueParking_2._0
         {
             for (int i = 0; i < capacity; i++)
             {
-                garageList.Add(new ParkingSpot());
-                garageList[i].ID = i;  // ID for the spot
-                garageList[i].Occupied = false; // Initially set as not occupied
+                garageList.Add(new ParkingSpot { ID = i, Occupied = false });
+                // garageList.Add(new ParkingSpot());
+                // garageList[i].ID = i;  // ID for the spot
+                // garageList[i].Occupied = false; // Initially set as not occupied
             }
         }
 
