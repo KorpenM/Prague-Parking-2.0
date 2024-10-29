@@ -94,14 +94,47 @@ internal class Program
 
         void removeVehicle()
         {
+            Console.Clear();
 
+            Console.Write("What type of vehicle are you trying to remove? \n\n[1] Car \n[2] Motorcycle \n\nType in the number of the corresponding vehicle type: ");
+            int chosenVehicleType = int.Parse(Console.ReadLine());
+
+            Console.Clear();
+
+            Console.Write("Type in the registration plate of the vehicle in question: ");
+            if (chosenVehicleType == 1)
+            {
+                string regPlate = Console.ReadLine();
+                string myCarData = "CAR" + "#" + regPlate;
+
+                Console.Clear();
+
+                myPark.removeFromParking(myCarData);
+
+                Console.Write("\n\nPress random key to continue...");
+                Console.ReadKey();
+                return;
+            }
+            else if (chosenVehicleType == 2)
+            {
+                string regPlate = Console.ReadLine();
+                string myMCData = "MC" + "#" + regPlate;
+
+                Console.Clear();
+
+                myPark.removeFromParking(myMCData);
+
+                Console.Write("\n\nPress random key to continue...");
+                Console.ReadKey();
+                return;
+            }
         }
 
         void showParking()
         {
             Console.Clear();
 
-            //Problem: Det skappas flera listor när man använder metoden flera gånger
+            //Bug: Det skappas flera listor när man använder metoden flera gånger
             myPark.printParking();
 
             Console.Write("\n\nPress random key to continue...");
