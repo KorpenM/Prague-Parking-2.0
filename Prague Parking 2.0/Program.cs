@@ -69,7 +69,7 @@ internal class Program
 
             Console.WriteLine("\nPress Enter to continue...");
             Console.ReadKey();
-        } while (menuChoice != "9"); 
+        } while (menuChoice != "9");
         // while (choice != "9");
     }
 

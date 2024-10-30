@@ -6,7 +6,8 @@ namespace PragueParking_2._0
     {
         public int ID { get; set; }
         public bool Occupied { get; set; }
-        public Vehicle? ParkedVehicle { get; set; } 
+        public Vehicle? ParkedVehicle { get; set; }
+
 
         public ParkingSpot()
         {
@@ -20,6 +21,29 @@ namespace PragueParking_2._0
 
         public bool CanAcceptVehicle(Vehicle vehicle)
         {
+            // Bussar kan endast parkera på platser 0-49
+            if (vehicle.TypeOfVehicle == VehicleType.Bus && ID >= 50)
+            {
+                return false;
+            }
+
+            // Spots 0-49 kan acceptera alla typer av fordon
+            if (ID < 50)
+            {
+                return true;
+            }
+            else
+            {
+                // Spots 50-99 kan bara acceptera Bike, MC och Car
+                return vehicle.TypeOfVehicle == VehicleType.Bike ||
+                       vehicle.TypeOfVehicle == VehicleType.MC ||
+                       vehicle.TypeOfVehicle == VehicleType.Car;
+            }
+        }
+
+
+        /*public bool CanAcceptVehicle(Vehicle vehicle)
+        {
             if (ID < 50)
             {
                 return true;
@@ -31,7 +55,7 @@ namespace PragueParking_2._0
                        vehicle.TypeOfVehicle == VehicleType.MC ||
                        vehicle.TypeOfVehicle == VehicleType.Car;
             }
-        }
+        }*/
 
     }
 }
