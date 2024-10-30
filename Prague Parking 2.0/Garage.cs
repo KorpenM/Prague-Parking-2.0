@@ -230,8 +230,22 @@ namespace PragueParking_2._0
             {
                 if (spot.Occupied)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"Parking Spot {spot.ID + 1}: Occupied by {spot.ParkedVehicle.RegNumber}");
+                    string spotString = spot.ParkedVehicle.TypeOfVehicle.ToString();
+                    int bikeIndex = spotString.IndexOf("Bike");
+                    int mcIndex = spotString.IndexOf("MC");
+                    int carIndex = spotString.IndexOf("Car");
+                    int busIndex = spotString.IndexOf("Bus");
+
+                    if (bikeIndex != -1 && bikeIndex < 3 || mcIndex != -1 && mcIndex < 1 || bikeIndex == 0 && mcIndex == 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"Parking Spot {spot.ID + 1}: Occupied by {spot.ParkedVehicle.RegNumber}"); //Partly occupied
+                    }
+                    else if (carIndex != -1 || bikeIndex == 3 || mcIndex == 1 || busIndex != -1 || bikeIndex == 1 && mcIndex == 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Parking Spot {spot.ID + 1}: Occupied by {spot.ParkedVehicle.RegNumber}"); // Occupied
+                    }
                 }
                 else
                 {
@@ -268,11 +282,11 @@ namespace PragueParking_2._0
                     int carIndex = spotString.IndexOf("Car");
                     int busIndex = spotString.IndexOf("Bus");
 
-                    if (bikeIndex != -1 && bikeIndex < 3 || mcIndex != -1 && mcIndex < 1)
+                    if (bikeIndex != -1 && bikeIndex < 3 || mcIndex != -1 && mcIndex < 1 || bikeIndex == 0 && mcIndex == 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow; //Partly occupied
                     }
-                    else if (carIndex != -1 || bikeIndex == 3 || mcIndex == 1 || busIndex != -1)
+                    else if (carIndex != -1 || bikeIndex == 3 || mcIndex == 1 || busIndex != -1 || bikeIndex == 1 && mcIndex == 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Red; // Occupied
                     }
