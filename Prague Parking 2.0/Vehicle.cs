@@ -1,40 +1,77 @@
 ﻿namespace PragueParking_2._0
 {
-    public class Vehicle
+    public enum VehicleType
     {
-        private string _regPlate;
-        private string _vehicleType;
-        private int _vehicleSize;
-
-        public Vehicle()
-        {
-            this._regPlate = regPlate;
-            this._vehicleType = vehicleType;
-            this._vehicleSize = vehicleSize;
-        }
-
-        public string regPlate { get; set; }
-        public string vehicleType { get; set; }
-        public int vehicleSize { get; set; }
+        Bike = 1,
+        MC = 2,
+        Car = 4,
+        Bus = 16,
     }
 
-    public class MC : Vehicle
+    internal class Vehicle
     {
-        public MC(string mcPlate)
+        public string RegNumber { get; set; }
+        public VehicleType TypeOfVehicle { get; set; }
+        public double Rate { get; set; }
+        public double Space { get; set; }
+        public DateTime ParkingStartTime { get; set; }
+
+        public Vehicle(string regNumber, VehicleType typeOfVehicle)
         {
-            this.regPlate = mcPlate;
-            this.vehicleType = "MC";
-            this.vehicleSize = 2;
+            RegNumber = regNumber;
+            TypeOfVehicle = typeOfVehicle;
+            SetVehicleProperties(typeOfVehicle);
+            ParkingStartTime = DateTime.Now;
+        }
+
+        private void SetVehicleProperties(VehicleType typeOfVehicle)
+        {
+            switch (typeOfVehicle)
+            {
+                case VehicleType.Bike:
+                    Rate = 5;
+                    Space = 1;
+                    break;
+                case VehicleType.MC:
+                    Rate = 10;
+                    Space = 2;
+                    break;
+                case VehicleType.Car:
+                    Rate = 20;
+                    Space = 4;
+                    break;
+                case VehicleType.Bus:
+                    Rate = 40;
+                    Space = 16;
+                    break;
+            }
+        }
+
+        public double CalculateParkingCost()
+        {
+            TimeSpan parkedDuration = DateTime.Now - ParkingStartTime;
+            return Space * Rate * parkedDuration.TotalHours;
         }
     }
 
-    public class Car : Vehicle
+    class Bike : Vehicle
     {
-        public Car(string carPlate)
-        {
-            this.regPlate = carPlate;
-            this.vehicleType = "CAR";
-            this.vehicleSize = 4;
-        }
+        public Bike(string regNumber) : base(regNumber, VehicleType.Bike) { }
+    }
+
+    class MC : Vehicle
+    {
+        public MC(string regNumber) : base(regNumber, VehicleType.MC) { }
+    }
+
+    class Car : Vehicle
+    {
+        public Car(string regNumber) : base(regNumber, VehicleType.Car) { }
+    }
+
+    class Bus : Vehicle
+    {
+        public Bus(string regNumber) : base(regNumber, VehicleType.Bus) { }
+
     }
 }
