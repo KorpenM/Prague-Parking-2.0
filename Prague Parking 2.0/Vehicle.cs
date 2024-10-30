@@ -72,6 +72,5 @@
     class Bus : Vehicle
     {
         public Bus(string regNumber) : base(regNumber, VehicleType.Bus) { }
-
     }
 }
