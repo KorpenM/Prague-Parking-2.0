@@ -70,7 +70,7 @@ internal class Program
             Console.WriteLine("\nPress Enter to continue...");
             Console.ReadKey();
         } while (menuChoice != "9"); 
-        // while (choice != "9"); // Fortsätt tills användaren väljer att avsluta
+        // while (choice != "9");
     }
 
     private static void AddVehicle()
@@ -198,9 +198,11 @@ internal class Program
     private static void ShowParking()
     {
         Console.Clear();
+        Console.WriteLine("Showing parkingspots..");
         garage.PrintGarage();
-        Console.Write("\n\nPress random key to continue...");
-        Console.ReadKey();
+        Console.WriteLine("Parkingspots shown.");
+        //Console.Write("\n\nPress random key to continue...");
+        //Console.ReadKey();
     }
 
     private static void ShowColorParking()

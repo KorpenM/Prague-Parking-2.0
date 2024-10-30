@@ -21,7 +21,7 @@
             RegNumber = regNumber;
             TypeOfVehicle = typeOfVehicle;
             SetVehicleProperties(typeOfVehicle);
-            ParkingStartTime = DateTime.Now; // Sätt starttiden vid konstruktion
+            ParkingStartTime = DateTime.Now;
         }
 
         private void SetVehicleProperties(VehicleType typeOfVehicle)
@@ -50,7 +50,7 @@
         public double CalculateParkingCost()
         {
             TimeSpan parkedDuration = DateTime.Now - ParkingStartTime;
-            return Space * Rate * parkedDuration.TotalHours; // Beräkna kostnad baserat på tid
+            return Space * Rate * parkedDuration.TotalHours;
         }
     }
 
