@@ -16,7 +16,7 @@ namespace PragueParking_2._0
 
         public virtual void ParkVehicle()
         {
-            Console.WriteLine("The vehicle is now parked");
+            Console.WriteLine("ParkVehicle in ParkingSPot");
         }
 
         public bool CanAcceptVehicle(Vehicle vehicle)
