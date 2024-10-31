@@ -10,42 +10,19 @@ namespace PragueParking_2._0
 
         public Garage() // Constructor for Garage
         {
-            InitializeGarage();
-
-            // Debug: check for duplicates or incorrect count
-            // Console.WriteLine("Total parking spots: " + garageList.Count);
-            // Console.WriteLine("Unique IDs count: " + new HashSet<int>(garageList.Select(s => s.ID)).Count);
-        }
-
-        public void InitGarage()
-        {
-            // PrintGarage();
-        }
-
-        public void InitializeGarage() // Add parking spots to the garage
-        {
+            //InitializeGarage();
             if (garageList.Count > 0) return;
 
-            /*if (garageList.Count > 0)
-            {
-                Console.WriteLine("Garage already initialized.");
-                return;
-            }*/
 
             for (int i = 0; i < capacity; i++)
             {
-                garageList.Add(new ParkingSpot { ID = i, Occupied = false });
-                // garageList.Add(new ParkingSpot());
-                // garageList[i].ID = i;  // ID for the spot
-                // garageList[i].Occupied = false; // Initially set as not occupied
+                garageList.Add(new ParkingSpot(i));
             }
-            // Debug
-            Console.WriteLine($"Garage initialized with {garageList.Count} parking spots.");
         }
 
         public bool ParkVehicle(Vehicle vehicle)
         {
-            if (vehicle.TypeOfVehicle == VehicleType.Bus)
+            if (vehicle.Type == "Bus")
             {
                 // Försök att parkera bussen (tar upp 4 platser)
                 for (int i = 0; i < garageList.Count - 3; i++) // Kontrollera upp till tre platser kvar
@@ -84,7 +61,7 @@ namespace PragueParking_2._0
                         spot.ParkedVehicle = vehicle; // Lägg till fordonet i platsen
                         vehicle.ParkingStartTime = DateTime.Now; // Sätt parkeringens starttid
 
-                        Console.WriteLine($"{vehicle.TypeOfVehicle} with reg {vehicle.RegNumber} has been parked on spot {spot.ID + 1}.");
+                        Console.WriteLine($"{vehicle.Type} with reg {vehicle.RegNumber} has been parked on spot {spot.ID + 1}.");
                         Console.WriteLine($"Check in: {vehicle.ParkingStartTime:yyyy-MM-dd HH:mm:ss}");
                         return true; // Fordonet parkerat
                     }
@@ -141,7 +118,7 @@ namespace PragueParking_2._0
             return null;
         }
 
-        public bool MoveVehicle(string regNumber, int fromSpot, int toSpot)
+        public bool MoveVehicle(string regNumber, int fromSpot, int toSpot) //*2 - Needs to be possible to move bike to a space with a bike
         {
             fromSpot--;
             toSpot--;
@@ -160,7 +137,7 @@ namespace PragueParking_2._0
                 return false;
             }
 
-            if (vehicle.TypeOfVehicle == VehicleType.Bus)
+            if (vehicle.Type == "Bus")
             {
                 if (fromSpot + 3 < garageList.Count && // Kontrollera att bussens alla platser finns
                     garageList[fromSpot + 1].ParkedVehicle?.RegNumber == regNumber &&
@@ -230,7 +207,7 @@ namespace PragueParking_2._0
             {
                 if (spot.Occupied)
                 {
-                    string spotString = spot.ParkedVehicle.TypeOfVehicle.ToString();
+                    string spotString = spot.ParkedVehicle.Type.ToString();
                     int bikeIndex = spotString.IndexOf("Bike");
                     int mcIndex = spotString.IndexOf("MC");
                     int carIndex = spotString.IndexOf("Car");
@@ -276,7 +253,7 @@ namespace PragueParking_2._0
                 }
                 else // Spot occupied
                 {
-                    string spotString = spot.ParkedVehicle.TypeOfVehicle.ToString();
+                    string spotString = spot.ParkedVehicle.Type.ToString();
                     int bikeIndex = spotString.IndexOf("Bike");
                     int mcIndex = spotString.IndexOf("MC");
                     int carIndex = spotString.IndexOf("Car");
@@ -316,7 +293,7 @@ namespace PragueParking_2._0
             {
                 if (spot.Occupied)
                 {
-                    Console.WriteLine($"Spot {spot.ID + 1}: {spot.ParkedVehicle.TypeOfVehicle} - Reg: {spot.ParkedVehicle.RegNumber}");
+                    Console.WriteLine($"Spot {spot.ID + 1}: {spot.ParkedVehicle.Type} - Reg: {spot.ParkedVehicle.RegNumber}");
                     hasVehicles = true;
                 }
             }
@@ -329,8 +306,59 @@ namespace PragueParking_2._0
             Console.ResetColor();
         }
 
+        //Optimize - find vehicle type, compare to other parking spaces, and then move them if possible
         public void OptimizeParking()
         {
+            Console.Clear();
+            Console.WriteLine("=== Registered Vehicles ===\n");
+
+            //Check for bicycles
+
+            List<string> regNumbers = new List<string>();
+       
+            for (int i = 0; i < garageList.Count; i++)
+            {
+                regNumbers.Capacity = 100;
+
+                var spot = garageList[i];
+                var type = spot.ParkedVehicle?.Type ?? null;
+                var regNumber = spot.ParkedVehicle?.RegNumber ?? null;
+
+                if(type == "Bike")
+                {
+                    Console.WriteLine($"Spot: {i} || Contains Vehicle Type: {type}");
+                    regNumbers.Add(regNumber);
+                    Console.WriteLine($"{type} with Reg Number {regNumber} added to temp list...\n\n");
+                    Console.WriteLine($"Showing {type}s and current spots in temp list:");
+
+                    for (int j = 0; j < regNumbers.Count; j++)
+                    {
+                        if (regNumbers[j] != null)
+                        {
+                            Console.WriteLine("LOOP WITH J");
+                            Console.WriteLine(regNumbers[j] ?? null);
+                            Console.WriteLine("The temp list contains: {0} vehicles",regNumbers.Count);
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("LOOP WITH J || regNumbers[j] was null...");
+                            break;
+                        }
+                    }
+                }
+
+                //*1 - Use move method to optimize || first implement ability to move a bike from a space to another space with a bike on it...
+
+
+
+
+            }
+
+            //Check for MC's
+
+
+
 
         }
     }

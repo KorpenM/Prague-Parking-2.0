@@ -4,14 +4,12 @@ using PragueParking_2._0;
 
 internal class Program
 {
+    //Create new Garage and initialize
     private static Garage garage = new Garage();
 
     private static void Main()
     {
-        garage.InitGarage();
-
         string menuChoice;
-        // int menuChoice;
         do
         {
             Console.Clear();
