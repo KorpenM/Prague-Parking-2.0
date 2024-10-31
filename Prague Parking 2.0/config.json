@@ -1,0 +1,42 @@
+{
+  "parkingSettings": {
+    "totalSpots": 100,
+    "freeParkingMinutes": 10,
+    "vehicleTypes": [
+      {
+        "type": "Bike",
+        "spaceRequired": 1,
+        "ratePerHour": 5,
+        "allowedSpots": "All spots"
+      },
+      {
+        "type": "MC",
+        "spaceRequired": 2,
+        "ratePerHour": 10,
+        "allowedSpots": "All spots"
+      },
+      {
+        "type": "Car",
+        "spaceRequired": 4,
+        "ratePerHour": 20,
+        "allowedSpots": "All spots"
+      },
+      {
+        "type": "Bus",
+        "spaceRequired": 16,
+        "ratePerHour": 80,
+        "allowedSpots": "Spots 1-50 only"
+      }
+    ]
+  },
+  "instructions": {
+    "general": "Prague Parking configuration settings. Edit carefully.",
+    "vehicleSizeInfo": {
+      "Bike": "Takes 1/4 spot (1 space unit), costs 5 CZK/hour",
+      "MC": "Takes half a spot (2 space units), costs 10 CZK/hour",
+      "Car": "Takes 1 spot (4 space units), costs 20 CZK/hour",
+      "Bus": "Takes 4 spots (16 space units), costs 80 CZK/hour, allowed only in spots 1-50"
+    },
+    "rules": "First 10 minutes are free for all vehicles. Large vehicles such as buses can only park in designated high-ceiling spots (1-50)."
+  }
+}

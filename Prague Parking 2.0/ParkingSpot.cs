@@ -21,41 +21,24 @@ namespace PragueParking_2._0
 
         public bool CanAcceptVehicle(Vehicle vehicle)
         {
-            // Bussar kan endast parkera på platser 0-49
+            // Bus can only park at 1-50
             if (vehicle.TypeOfVehicle == VehicleType.Bus && ID >= 50)
             {
                 return false;
             }
 
-            // Spots 0-49 kan acceptera alla typer av fordon
+            // Spots 0-49 can accept all vehicles
             if (ID < 50)
             {
                 return true;
             }
             else
             {
-                // Spots 50-99 kan bara acceptera Bike, MC och Car
+                // Spots 50-99 can only accept Bike, MC and Car
                 return vehicle.TypeOfVehicle == VehicleType.Bike ||
                        vehicle.TypeOfVehicle == VehicleType.MC ||
                        vehicle.TypeOfVehicle == VehicleType.Car;
             }
         }
-
-
-        /*public bool CanAcceptVehicle(Vehicle vehicle)
-        {
-            if (ID < 50)
-            {
-                return true;
-            }
-            else
-            {
-                // Spots 51-100 (ID 50-99) can only accept Bike, MC and Car
-                return vehicle.TypeOfVehicle == VehicleType.Bike ||
-                       vehicle.TypeOfVehicle == VehicleType.MC ||
-                       vehicle.TypeOfVehicle == VehicleType.Car;
-            }
-        }*/
-
     }
 }

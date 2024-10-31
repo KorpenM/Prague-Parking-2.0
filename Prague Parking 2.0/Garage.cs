@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 
 namespace PragueParking_2._0
 {
@@ -7,9 +10,12 @@ namespace PragueParking_2._0
     {
         private int capacity = 100;
         public List<ParkingSpot> garageList = new List<ParkingSpot>();
+        public ParkingSettings settings; // Store settings from JSON
 
         public Garage() // Constructor for Garage
         {
+            LoadSettings(); // Load settings from JSON
+
             InitializeGarage();
 
             // Debug: check for duplicates or incorrect count
@@ -20,6 +26,49 @@ namespace PragueParking_2._0
         public void InitGarage()
         {
             // PrintGarage();
+        }
+
+        public void LoadSettings()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+
+            if (File.Exists(jsonFilePath))
+            {
+                string json = File.ReadAllText(jsonFilePath);
+                settings = JsonConvert.DeserializeObject<ParkingSettings>(json);
+                Console.WriteLine("Settings loaded successfully.");
+
+                // Kontrollera om VehicleTypes är null och initiera vid behov
+                if (settings.VehicleTypes == null)
+                {
+                    settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Config file not found. Using default settings.");
+
+                settings = new ParkingSettings
+                {
+                    TotalSpots = 100,
+                    FreeParkingMinutes = 10,
+                    VehicleTypes = new Dictionary<string, VehicleTypeInfo>
+            {
+                { "Bike", new VehicleTypeInfo { SpaceRequired = 1, RatePerHour = 5, AllowedSpots = "All spots" }},
+                { "MC", new VehicleTypeInfo { SpaceRequired = 2, RatePerHour = 10, AllowedSpots = "All spots" }},
+                { "Car", new VehicleTypeInfo { SpaceRequired = 4, RatePerHour = 20, AllowedSpots = "All spots" }},
+                { "Bus", new VehicleTypeInfo { SpaceRequired = 16, RatePerHour = 80, AllowedSpots = "Spots 1-50 only" }},
+            }
+                };
+            }
+        }
+
+        public void SaveSettings()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+            string json = JsonConvert.SerializeObject(settings, Formatting.Indented); // Indenterad format
+            File.WriteAllText(jsonFilePath, json);
+            Console.WriteLine("Settings saved successfully.");
         }
 
         public void InitializeGarage() // Add parking spots to the garage
@@ -43,12 +92,13 @@ namespace PragueParking_2._0
             Console.WriteLine($"Garage initialized with {garageList.Count} parking spots.");
         }
 
+
         public bool ParkVehicle(Vehicle vehicle)
         {
             if (vehicle.TypeOfVehicle == VehicleType.Bus)
             {
-                // Försök att parkera bussen (tar upp 4 platser)
-                for (int i = 0; i < garageList.Count - 3; i++) // Kontrollera upp till tre platser kvar
+                // Try park bus (4 spots)
+                for (int i = 0; i < garageList.Count - 3; i++) //  Check up to 3 spots left
                 {
                     if (!garageList[i].Occupied &&
                         !garageList[i + 1].Occupied &&
@@ -59,37 +109,37 @@ namespace PragueParking_2._0
                         garageList[i + 2].CanAcceptVehicle(vehicle) &&
                         garageList[i + 3].CanAcceptVehicle(vehicle))
                     {
-                        // Parkera bussen på dessa fyra platser
+                        // Park bus on these 4 spots
                         for (int j = 0; j < 4; j++)
                         {
                             garageList[i + j].Occupied = true;
                             garageList[i + j].ParkedVehicle = vehicle;
                         }
-                        vehicle.ParkingStartTime = DateTime.Now; // Sätt parkeringens starttid
+                        vehicle.ParkingStartTime = DateTime.Now; // Parking Start time
 
                         Console.WriteLine($"Bus with reg {vehicle.RegNumber} has been parked on spots {i + 1}, {i + 2}, {i + 3}, and {i + 4}.");
-                        return true; // Buss parkerad
+                        return true; // Bus parked success
                     }
                 }
                 Console.WriteLine("No available parking spots for the bus.");
-                return false; // Ingen tillgänglig plats
+                return false;
             }
-            else // För andra fordonstyper
+            else // For other vehicle types
             {
                 foreach (var spot in garageList)
                 {
-                    if (!spot.Occupied && spot.CanAcceptVehicle(vehicle)) // Finn en ledig plats
+                    if (!spot.Occupied && spot.CanAcceptVehicle(vehicle)) // Find free spot
                     {
                         spot.Occupied = true;
-                        spot.ParkedVehicle = vehicle; // Lägg till fordonet i platsen
-                        vehicle.ParkingStartTime = DateTime.Now; // Sätt parkeringens starttid
+                        spot.ParkedVehicle = vehicle; // Add vehicle to spot
+                        vehicle.ParkingStartTime = DateTime.Now; // Start park time
 
                         Console.WriteLine($"{vehicle.TypeOfVehicle} with reg {vehicle.RegNumber} has been parked on spot {spot.ID + 1}.");
                         Console.WriteLine($"Check in: {vehicle.ParkingStartTime:yyyy-MM-dd HH:mm:ss}");
-                        return true; // Fordonet parkerat
+                        return true; // Vehicle parked
                     }
                 }
-                return false; // Ingen ledig plats
+                return false; // No free spot
             }
         }
 
@@ -99,7 +149,7 @@ namespace PragueParking_2._0
             {
                 if (spot.Occupied && spot.ParkedVehicle?.RegNumber == regNumber)
                 {
-                    var parkedDuration = DateTime.Now - spot.ParkedVehicle.ParkingStartTime; // Beräkna parkeringstid
+                    var parkedDuration = DateTime.Now - spot.ParkedVehicle.ParkingStartTime; // Calculate park time
 
                     int days = parkedDuration.Days;
                     int hours = parkedDuration.Hours;
@@ -162,26 +212,26 @@ namespace PragueParking_2._0
 
             if (vehicle.TypeOfVehicle == VehicleType.Bus)
             {
-                if (fromSpot + 3 < garageList.Count && // Kontrollera att bussens alla platser finns
+                if (fromSpot + 3 < garageList.Count && // Make sure all spots for bus are available
                     garageList[fromSpot + 1].ParkedVehicle?.RegNumber == regNumber &&
                     garageList[fromSpot + 2].ParkedVehicle?.RegNumber == regNumber &&
                     garageList[fromSpot + 3].ParkedVehicle?.RegNumber == regNumber)
                 {
-                    // Kontrollera att de nya platserna är lediga och att de inte överstiger plats 50
-                    if (toSpot + 3 < garageList.Count && toSpot + 3 < 50 && // Ny plats får inte vara > 50
+                    // Make sure new spots are free and don't go above 50
+                    if (toSpot + 3 < garageList.Count && toSpot + 3 < 50 && // New spot = not above 50
                         !garageList[toSpot].Occupied &&
                         !garageList[toSpot + 1].Occupied &&
                         !garageList[toSpot + 2].Occupied &&
                         !garageList[toSpot + 3].Occupied)
                     {
-                        // Flytta bussen till de nya platserna
+                        // Move bus to new spots
                         for (int i = 0; i < 4; i++)
                         {
                             garageList[toSpot + i].Occupied = true;
                             garageList[toSpot + i].ParkedVehicle = vehicle;
                         }
 
-                        // Frigör de gamla platserna
+                        // Make old spots free
                         for (int i = 0; i < 4; i++)
                         {
                             garageList[fromSpot + i].Occupied = false;
@@ -200,26 +250,26 @@ namespace PragueParking_2._0
                 else
                 {
                     Console.WriteLine("No vehicle registered on the from-spot.");
-                    return false; // Ingen buss på de angivna platserna
+                    return false; // No bus on spots
                 }
             }
 
-            // Om det inte är en buss, flytta fordonet som vanligt
+            // If not bus, move other vehicles
             if (garageList[toSpot].Occupied)
             {
                 Console.WriteLine("Cannot move vehicle to this spot. It is already occupied.");
-                return false; // Kan inte flytta till en upptagen plats
+                return false;
             }
 
-            // Flytta fordonet från en vanlig plats
-            garageList[toSpot].Occupied = true; // Markera den nya platsen som upptagen
-            garageList[toSpot].ParkedVehicle = vehicle; // Flytta fordonet
+            // Move vehicle from a normal spot
+            garageList[toSpot].Occupied = true; // Mark new spot as busy
+            garageList[toSpot].ParkedVehicle = vehicle; // Move the vehicle
 
-            garageList[fromSpot].Occupied = false; // Markera den gamla platsen som ledig
-            garageList[fromSpot].ParkedVehicle = null; // Ta bort fordonet från den gamla platsen
+            garageList[fromSpot].Occupied = false; // Mark the old spot as free
+            garageList[fromSpot].ParkedVehicle = null; // Remove vehicle from the old spot
 
             Console.WriteLine($"Vehicle moved from spot {fromSpot + 1} to spot {toSpot + 1}.");
-            return true; // Fordonet flyttat
+            return true;
         }
 
         public void PrintGarage()
@@ -239,12 +289,12 @@ namespace PragueParking_2._0
                     if (bikeIndex != -1 && bikeIndex < 3 || mcIndex != -1 && mcIndex < 1 || bikeIndex == 0 && mcIndex == 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine($"Parking Spot {spot.ID + 1}: Occupied by {spot.ParkedVehicle.RegNumber}"); //Partly occupied
+                        Console.WriteLine($"Parking Spot {spot.ID + 1}: Occupied by {spot.ParkedVehicle.RegNumber}"); // Partly occupied
                     }
                     else if (carIndex != -1 || bikeIndex == 3 || mcIndex == 1 || busIndex != -1 || bikeIndex == 1 && mcIndex == 0)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine($"Parking Spot {spot.ID + 1}: Occupied by {spot.ParkedVehicle.RegNumber}"); // Occupied
+                        Console.WriteLine($"Parking Spot {spot.ID + 1}: Occupied by {spot.ParkedVehicle.RegNumber}"); // Occupied/busy
                     }
                 }
                 else

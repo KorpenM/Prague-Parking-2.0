@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using PragueParking_2._0;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 internal class Program
 {
@@ -8,10 +11,12 @@ internal class Program
 
     private static void Main()
     {
+        garage.LoadSettings();
+
         garage.InitGarage();
 
         string menuChoice;
-        // int menuChoice;
+
         do
         {
             Console.Clear();
@@ -28,10 +33,11 @@ internal class Program
             Console.WriteLine("6. Show Parking Spots | COLOURED-GRID |");
             Console.WriteLine("7. Show all registered vehicles");
             Console.WriteLine("8. Optimize parking");
-            Console.WriteLine("9. Exit");
+            Console.WriteLine("9. Edit Parking Settings"); // Json config
+            Console.WriteLine("10. Show Current/Updated Settings");
+            Console.WriteLine("11. Exit");
 
             menuChoice = Console.ReadLine();
-            // string choice = Console.ReadLine();
 
             switch (menuChoice)
             {
@@ -60,6 +66,12 @@ internal class Program
                     OptimizeParking();
                     break;
                 case "9":
+                    EditSettings();
+                    break;
+                case "10":
+                    ShowSettings();
+                    break;
+                case "11":
                     Console.WriteLine("Exiting the program...");
                     break;
                 default:
@@ -69,8 +81,70 @@ internal class Program
 
             Console.WriteLine("\nPress Enter to continue...");
             Console.ReadKey();
-        } while (menuChoice != "9");
-        // while (choice != "9");
+
+            if (menuChoice != "11")
+            {
+                Console.WriteLine("\nPress Enter to return to the menu...");
+                Console.ReadLine();
+            }
+
+        } while (menuChoice != "11"); // Program closes only at case 11, to easier view JSON
+    }
+
+    private static void EditSettings()
+    {
+        Console.Clear();
+        Console.WriteLine("Editing Parking Settings:");
+        Console.Write("Enter total parking spots: ");
+        garage.settings.TotalSpots = int.Parse(Console.ReadLine());
+
+        Console.Write("Enter free parking minutes: ");
+        garage.settings.FreeParkingMinutes = int.Parse(Console.ReadLine());
+
+        // Check and initiate VehicleTypes if it's null
+        if (garage.settings.VehicleTypes == null)
+        {
+            garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
+        }
+
+        foreach (var vehicleType in garage.settings.VehicleTypes)
+        {
+            Console.WriteLine($"\n--- {vehicleType.Key} Settings ---");
+            Console.Write("Enter space required: ");
+            vehicleType.Value.SpaceRequired = int.Parse(Console.ReadLine());
+
+            Console.Write("Enter rate per hour: ");
+            vehicleType.Value.RatePerHour = int.Parse(Console.ReadLine());
+
+            Console.Write("Enter allowed spots: ");
+            vehicleType.Value.AllowedSpots = Console.ReadLine();
+        }
+
+        garage.SaveSettings();
+    }
+
+    private static void ShowSettings()
+    {
+        Console.Clear();
+        Console.WriteLine("Current Parking Settings:");
+
+        string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+
+        if (File.Exists(jsonFilePath))
+        {
+            // Read and show JSON file
+            string json = File.ReadAllText(jsonFilePath);
+            var formattedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(json), Formatting.Indented);
+
+            Console.WriteLine(formattedJson);
+        }
+        else
+        {
+            Console.WriteLine("Config file not found. Default settings may be in use.");
+        }
+
+        Console.WriteLine("\nPress Enter to return to the menu...");
+        Console.ReadLine();
     }
 
     private static void AddVehicle()
@@ -201,15 +275,12 @@ internal class Program
         Console.WriteLine("Showing parkingspots..");
         garage.PrintGarage();
         Console.WriteLine("Parkingspots shown.");
-        //Console.Write("\n\nPress random key to continue...");
-        //Console.ReadKey();
     }
 
     private static void ShowColorParking()
     {
         Console.Clear();
         garage.ShowColorParkingSpots();
-        // garage.PrintColorGarage();
         Console.Write("\n\nPress random key to continue...");
         Console.ReadKey();
     }
