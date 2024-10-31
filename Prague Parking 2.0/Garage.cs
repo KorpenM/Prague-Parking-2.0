@@ -141,7 +141,7 @@ namespace PragueParking_2._0
             return null;
         }
 
-        public bool MoveVehicle(string regNumber, int fromSpot, int toSpot)
+        public bool MoveVehicle(string regNumber, int fromSpot, int toSpot) //*2 - Needs to be possible to move bike to a space with a bike
         {
             fromSpot--;
             toSpot--;
@@ -329,8 +329,59 @@ namespace PragueParking_2._0
             Console.ResetColor();
         }
 
+        //Optimize - find vehicle type, compare to other parking spaces, and then move them if possible
         public void OptimizeParking()
         {
+            Console.Clear();
+            Console.WriteLine("=== Registered Vehicles ===\n");
+
+            //Check for bicycles
+
+            List<string> regNumbers = new List<string>();
+       
+            for (int i = 0; i < garageList.Count; i++)
+            {
+                regNumbers.Capacity = 100;
+
+                var spot = garageList[i];
+                var type = spot.ParkedVehicle?.TypeOfVehicle ?? null;
+                var regNumber = spot.ParkedVehicle?.RegNumber ?? null;
+
+                if(type == VehicleType.Bike)
+                {
+                    Console.WriteLine($"Spot: {i} || Contains Vehicle Type: {type}");
+                    regNumbers.Add(regNumber);
+                    Console.WriteLine($"{type} with Reg Number {regNumber} added to temp list...\n\n");
+                    Console.WriteLine($"Showing {type}s and current spots in temp list:");
+
+                    for (int j = 0; j < regNumbers.Count; j++)
+                    {
+                        if (regNumbers[j] != null)
+                        {
+                            Console.WriteLine("LOOP WITH J");
+                            Console.WriteLine(regNumbers[j] ?? null);
+                            Console.WriteLine("The temp list contains: {0} vehicles",regNumbers.Count);
+
+                        }
+                        else
+                        {
+                            Console.WriteLine("LOOP WITH J || regNumbers[j] was null...");
+                            break;
+                        }
+                    }
+                }
+
+                //*1 - Use move method to optimize || first implement ability to move a bike from a space to another space with a bike on it...
+
+
+
+
+            }
+
+            //Check for MC's
+
+
+
 
         }
     }
