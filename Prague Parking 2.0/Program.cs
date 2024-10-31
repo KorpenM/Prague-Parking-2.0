@@ -1,224 +1,225 @@
 ﻿using System;
 using System.Collections.Generic;
+using Spectre.Console;
 using PragueParking_2._0;
 
 internal class Program
 {
+    //Create new Garage and initialize
     private static Garage garage = new Garage();
 
     private static void Main()
     {
-        garage.InitGarage();
-
         string menuChoice;
-        // int menuChoice;
         do
         {
             Console.Clear();
-            Console.WriteLine("======================");
-            Console.WriteLine("   PRAGUE PARKING");
-            Console.WriteLine("======================\n");
 
-            Console.WriteLine("Choose option:");
-            Console.WriteLine("1. Park Vehicle");
-            Console.WriteLine("2. Retrieve/Remove Vehicle");
-            Console.WriteLine("3. Move Vehicle");
-            Console.WriteLine("4. Search");
-            Console.WriteLine("5. Show Parking Spots");
-            Console.WriteLine("6. Show Parking Spots | COLOURED-GRID |");
-            Console.WriteLine("7. Show all registered vehicles");
-            Console.WriteLine("8. Optimize parking");
-            Console.WriteLine("9. Exit");
+            AnsiConsole.Write(new FigletText("Prague Parking")
+                       .LeftJustified()
+                       .Color(Color.Blue));
 
-            menuChoice = Console.ReadLine();
-            // string choice = Console.ReadLine();
+            var rule = new Rule();
+            AnsiConsole.Write(rule);
+
+            garage.ShowColorParkingSpots();
+
+            AnsiConsole.Write(rule);
+
+            var options = new[]
+            {
+                "Park Vehicle",
+                "Retrieve/Remove Vehicle",
+                "Move Vehicle",
+                "Search Vehicle",
+                //"Show Parking Spots",
+                "Show all registered vehicles",
+                "Optimize parking",
+                "Exit"
+            };
+
+            var highlightStyle = new Style().Foreground(Color.Blue);
+            menuChoice = AnsiConsole.Prompt(new SelectionPrompt<string>()
+                    .HighlightStyle(highlightStyle)
+                    .WrapAround(true)
+                    .Title("[bold blue]Choose an option:[/]")
+                    .AddChoices(options));
 
             switch (menuChoice)
             {
-                case "1":
+                case "Park Vehicle":
                     AddVehicle();
                     break;
-                case "2":
+                case "Retrieve/Remove Vehicle":
                     RemoveVehicle();
                     break;
-                case "3":
+                case "Move Vehicle":
                     MoveVehicle();
                     break;
-                case "4":
+                case "Search Vehicle":
                     SearchVehicle();
                     break;
-                case "5":
-                    ShowParking();
-                    break;
-                case "6":
-                    ShowColorParking();
-                    break;
-                case "7":
+                //case "Show Parking Spots":
+                //    ShowParking();
+                //    break;
+                case "Show all registered vehicles":
                     ShowRegisteredVehicles();
                     break;
-                case "8":
+                case "Optimize parking":
                     OptimizeParking();
                     break;
-                case "9":
-                    Console.WriteLine("Exiting the program...");
+                case "Exit":
+                    Console.Write("\nExiting program...");
                     break;
                 default:
-                    Console.WriteLine("Invalid choice. Please try again.");
+                    Console.Write("\nInvalid choice. Please try again...");
                     break;
             }
-
-            Console.WriteLine("\nPress Enter to continue...");
-            Console.ReadKey();
-        } while (menuChoice != "9");
-        // while (choice != "9");
+        } while (menuChoice != "Exit"); // Program closes only at case "Exit"
     }
 
     private static void AddVehicle()
     {
         Console.Clear();
-        Console.Write("What type of vehicle are you trying to park? \n\n[1] Bike \n[2] Motorcycle \n[3] Car \n[4] Bus \n\nType in the number of the corresponding vehicle type: ");
-        int chosenVehicleType = int.Parse(Console.ReadLine());
+        var vehicleTypes = new[]
+        {
+            "Bike",
+            "Motorcycle",
+            "Car",
+            "Bus"
+        };
+        var highlightStyle = new Style().Foreground(Color.Blue);
+        var chosenVehicleType = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .HighlightStyle(highlightStyle)
+                .WrapAround(true)
+                .Title("What type of vehicle are you trying to park?")
+                .AddChoices(vehicleTypes)
+        );
 
         Console.Clear();
-        Console.Write("Type in the registration plate of the vehicle in question: ");
-        string regNumber = Console.ReadLine();
+        string regNumber = AnsiConsole.Ask<string>("Type in the registration plate of the vehicle in question: \n");
         Vehicle vehicle = null;
 
-        if (chosenVehicleType == 1)
+        switch (chosenVehicleType)
         {
-            vehicle = new Bike(regNumber);
-        }
-        else if (chosenVehicleType == 2)
-        {
-            vehicle = new MC(regNumber);
-        }
-        else if (chosenVehicleType == 3)
-        {
-            vehicle = new Car(regNumber);
-        }
-        else if (chosenVehicleType == 4)
-        {
-            vehicle = new Bus(regNumber);
-        }
-        else
-        {
-            Console.WriteLine("Invalid vehicle type selected.");
-            Console.ReadKey();
-            return;
+            case "Bike":
+                vehicle = new Bike(regNumber);
+                break;
+            case "Motorcycle":
+                vehicle = new MC(regNumber);
+                break;
+            case "Car":
+                vehicle = new Car(regNumber);
+                break;
+            case "Bus":
+                vehicle = new Bus(regNumber);
+                break;
+            default:
+                Console.WriteLine("Invalid vehicle type selected");
+                Console.Write("\nPress random key to continue...");
+                Console.ReadKey();
+                return;
         }
 
         if (garage.ParkVehicle(vehicle))
         {
-            // Skriver redan ut i ParkVehicle metoden - annars:
-            // Console.WriteLine($"{vehicle.TypeOfVehicle} with registration number {regNumber} has been parked on spot {spot.ID + 1}.");
+            AnsiConsole.Markup($"{vehicle.TypeOfVehicle} with registration number [blue]{regNumber}[/] has been parked");
         }
         else
         {
-            Console.WriteLine("No available parking spots.");
+            Console.WriteLine("There is no available parking spots");
         }
 
-        Console.Write("\n\nPress random key to continue...");
+        Console.Write("\nPress random key to continue...");
         Console.ReadKey();
     }
 
     private static void RemoveVehicle()
     {
         Console.Clear();
-        Console.Write("Enter the registration plate of the vehicle you wish to remove: ");
-        string regNumber = Console.ReadLine();
+        string regNumber = AnsiConsole.Ask<string>("Enter the registration plate of the vehicle you wish to remove: ");
 
         if (garage.RemoveVehicle(regNumber))
         {
-            Console.WriteLine($"Vehicle with registration number {regNumber} has been removed.");
+            AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] has been removed");
         }
         else
         {
-            Console.WriteLine("Vehicle not found.");
+            Console.WriteLine("Vehicle not found");
         }
-
-        Console.Write("\n\nPress random key to continue...");
+        Console.Write("Press random key to continue...");
         Console.ReadKey();
     }
+
 
     private static void MoveVehicle()
     {
         Console.Clear();
-        Console.WriteLine("Enter the registration number of the vehicle you want to move:");
-        string regNumber = Console.ReadLine();
-
-        Console.WriteLine("Enter the parking spot to move from:");
-        if (!int.TryParse(Console.ReadLine(), out int fromSpot) || fromSpot < 0)
+        string regNumber = AnsiConsole.Ask<string>("Enter the registration number of the vehicle you want to move: ");
+        if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move from: "), out int fromSpot) || fromSpot < 0)
         {
-            Console.WriteLine("Invalid spot number.");
+            Console.WriteLine("Invalid spot number");
+            Console.Write("Press random key to continue...");
             Console.ReadKey();
             return;
         }
 
-        Console.WriteLine("Enter the parking spot to move to:");
-        if (!int.TryParse(Console.ReadLine(), out int toSpot) || toSpot < 0)
+        if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 0)
         {
-            Console.WriteLine("Invalid spot number.");
+            Console.WriteLine("Invalid spot number");
+            Console.Write("Press random key to continue...");
             Console.ReadKey();
             return;
         }
 
         if (garage.MoveVehicle(regNumber, fromSpot, toSpot))
         {
-            Console.WriteLine("Vehicle moved successfully.");
+            Console.WriteLine("Vehicle moved successfully");
         }
         else
         {
-            Console.WriteLine("Failed to move vehicle. Check if it exists and if spots are valid.");
+            Console.WriteLine("Failed to move vehicle. Check if it exists and if spots are valid");
         }
 
-        Console.Write("\n\nPress random key to continue...");
+        Console.Write("\nPress random key to continue...");
         Console.ReadKey();
     }
 
     private static void SearchVehicle()
     {
         Console.Clear();
-        Console.Write("Enter the registration plate of the vehicle you wish to search for: ");
-        string regNumber = Console.ReadLine();
+        string regNumber = AnsiConsole.Ask<string>("Enter the registration plate of the vehicle you wish to search for: ");
 
         var spot = garage.FindVehicle(regNumber);
         if (spot != null)
         {
-            Console.WriteLine($"Vehicle with registration number {regNumber} is parked at spot {spot.ID + 1}.");
+            AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] is parked at spot {spot.ID + 1}");
         }
         else
         {
-            Console.WriteLine("Vehicle not found.");
+            Console.WriteLine("Vehicle not found");
         }
 
-        Console.Write("\n\nPress random key to continue...");
+        Console.Write("\nPress random key to continue...");
         Console.ReadKey();
     }
 
-    private static void ShowParking()
-    {
-        Console.Clear();
-        Console.WriteLine("Showing parkingspots..");
-        garage.PrintGarage();
-        Console.WriteLine("Parkingspots shown.");
-        //Console.Write("\n\nPress random key to continue...");
-        //Console.ReadKey();
-    }
-
-    private static void ShowColorParking()
-    {
-        Console.Clear();
-        garage.ShowColorParkingSpots();
-        // garage.PrintColorGarage();
-        Console.Write("\n\nPress random key to continue...");
-        Console.ReadKey();
-    }
+    //private static void ShowParking()
+    //{
+    //    Console.Clear();
+    //    AnsiConsole.Markup("[bold yellow]Showing parking spots...[/]\n");
+    //    garage.PrintGarage();
+    //    Console.Write("\nPress random key to continue...");
+    //    Console.ReadKey();
+    //    Console.Clear();
+    //}
 
     private static void ShowRegisteredVehicles()
     {
         Console.Clear();
         garage.PrintRegisteredVehicles();
-        Console.Write("\n\nPress random key to continue...");
+        Console.Write("\nPress random key to continue...");
         Console.ReadKey();
     }
 
@@ -226,7 +227,7 @@ internal class Program
     {
         Console.Clear();
         garage.OptimizeParking();
-        Console.Write("\n\nPress random key to continue...");
+        Console.Write("\nPress random key to continue...");
         Console.ReadKey();
     }
 }
