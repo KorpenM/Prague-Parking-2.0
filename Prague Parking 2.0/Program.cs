@@ -90,7 +90,6 @@ internal class Program
 
         } while (menuChoice != "11"); // Program closes only at case 11, to easier view JSON
     }
-
     private static void EditSettings()
     {
         Console.Clear();

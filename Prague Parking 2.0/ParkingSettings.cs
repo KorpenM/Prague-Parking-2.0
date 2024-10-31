@@ -19,7 +19,9 @@ namespace PragueParking_2._0
         public int SpaceRequired { get; set; }
         public int RatePerHour { get; set; }
         public string AllowedSpots { get; set; }
+        public int NumberOfVehiclesPerSpot { get; set; }
     }
+
 
     public class Instructions
     {

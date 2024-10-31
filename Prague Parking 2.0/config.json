@@ -2,32 +2,32 @@
   "parkingSettings": {
     "totalSpots": 100,
     "freeParkingMinutes": 10,
-    "vehicleTypes": [
-      {
-        "type": "Bike",
+    "vehicleTypes": {
+      "Bike": {
         "spaceRequired": 1,
         "ratePerHour": 5,
-        "allowedSpots": "All spots"
+        "allowedSpots": "All spots",
+        "numberOfVehiclesPerSpot": 4
       },
-      {
-        "type": "MC",
+      "MC": {
         "spaceRequired": 2,
         "ratePerHour": 10,
-        "allowedSpots": "All spots"
+        "allowedSpots": "All spots",
+        "numberOfVehiclesPerSpot": 2
       },
-      {
-        "type": "Car",
+      "Car": {
         "spaceRequired": 4,
         "ratePerHour": 20,
-        "allowedSpots": "All spots"
+        "allowedSpots": "All spots",
+        "numberOfVehiclesPerSpot": 1
       },
-      {
-        "type": "Bus",
+      "Bus": {
         "spaceRequired": 16,
         "ratePerHour": 80,
-        "allowedSpots": "Spots 1-50 only"
+        "allowedSpots": "Spots 1-50 only",
+        "numberOfVehiclesPerSpot": 1
       }
-    ]
+    }
   },
   "instructions": {
     "general": "Prague Parking configuration settings. Edit carefully.",
