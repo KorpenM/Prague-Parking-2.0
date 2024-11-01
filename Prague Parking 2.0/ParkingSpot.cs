@@ -4,30 +4,80 @@ namespace PragueParking_2._0
 {
     internal class ParkingSpot
     {
+
+        private int spotCapacity = 4;
+
+        private int available;
+
+        private bool occupied;
+
+        private int usedCapacity;
+
+        private int vehicleSpace;
+
+        public List<Vehicle> Spots { get; set; }
         public int ID { get; set; }
-        public bool Occupied { get; set; } = false;
+
         public Vehicle? ParkedVehicle { get; set; }
-        public int SpotCapacity { get; set; } = 4;
 
-        public int UsedCapacity { get; set; } = 0;
+        public int SpotCapacity
 
-        //public ParkingSpot[] parkingSpots = new ParkingSpot[4];
+        {
+            get { return spotCapacity; }
+            set { spotCapacity = value; }
+        }
 
- 
-        
-        //public static ParkingSpot Spot(Vehicle vehicle)
-        //{
-        //    var spot = new ParkingSpot(vehicle);
-        //    return spot;
-        //}
+
+
+        public int UsedCapacity
+        {
+            get { return usedCapacity; }
+            set { usedCapacity = value; }
+        }
+
+
+
+        public bool Occupied { get; set; } = false;
+       
+
+        public void SetVehicleSpace(Vehicle vehicle)
+        {
+            vehicleSpace = vehicle.Space;
+        }
+        public int Available
+        {
+            get
+            {
+                if (Spots.Count == 0)
+                {
+                    return available = 4;
+                }
+                else
+                {
+                    return available = spotCapacity - usedCapacity;
+                }
+            }
+            set { available = value; }
+        }
+
+
+
+
+
 
         public ParkingSpot(int id)
         {
             //this.ParkedVehicle = vehicle;
             this.ID = id;
             this.Occupied = false;
-          
+            this.Spots = new List<Vehicle>();
+            //this.Available = 4;
+            this.SpotCapacity = spotCapacity;
+            this.UsedCapacity = usedCapacity;
+
         }
+
+
 
         public virtual void ParkVehicle()
         {
@@ -56,7 +106,7 @@ namespace PragueParking_2._0
             }
         }
 
-       
+
 
 
         /*public bool CanAcceptVehicle(Vehicle vehicle)
