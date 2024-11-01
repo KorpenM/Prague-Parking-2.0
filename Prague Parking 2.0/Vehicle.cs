@@ -1,4 +1,4 @@
-﻿namespace PragueParking_2._0
+namespace PragueParking_2._0
 {
     public enum VehicleType
     {
