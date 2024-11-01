@@ -1,87 +1,76 @@
-﻿namespace PragueParking_2._0;
-
-public interface ICalculateParkingCost
+namespace PragueParking_2._0
 {
-    public double CalculateParkingCost(double Space, int Rate, DateTime ParkingStartTime);
-}
-public abstract class Vehicle : ICalculateParkingCost
-{
-    public abstract string? RegNumber { get; set; }
-    public abstract string Type { get; set; }
-    public abstract double Rate { get; set; }
-    public abstract double Space { get; set; }
-    public DateTime ParkingStartTime { get; set; }
-
-    public Vehicle()
+    public enum VehicleType
     {
-
-    }
-    public double CalculateParkingCost(double Space, int Rate, DateTime ParkingStartTime)
-    {
-        TimeSpan parkedDuration = DateTime.Now - ParkingStartTime;
-        return Space * Rate * parkedDuration.TotalHours;
+        Bike = 1,
+        MC = 2,
+        Car = 4,
+        Bus = 16,
     }
 
-
-}
-
-
-class Bike : Vehicle
-{
-    public override string? RegNumber { get; set; }
-    public override string Type { get; set; } = "Bike";
-    public override double Rate { get; set; } = 5;
-    public override double Space { get; set; } = 1;
-
-    public Bike(string regnumber)
+    internal class Vehicle
     {
-        this.RegNumber = regnumber;
+        public string RegNumber { get; set; }
+        public VehicleType TypeOfVehicle { get; set; }
+        public double Rate { get; set; }
+        public double Space { get; set; }
+        public DateTime ParkingStartTime { get; set; }
+
+        public Vehicle(string regNumber, VehicleType typeOfVehicle)
+        {
+            RegNumber = regNumber;
+            TypeOfVehicle = typeOfVehicle;
+            SetVehicleProperties(typeOfVehicle);
+            ParkingStartTime = DateTime.Now;
+        }
+
+        private void SetVehicleProperties(VehicleType typeOfVehicle)
+        {
+            switch (typeOfVehicle)
+            {
+                case VehicleType.Bike:
+                    Rate = 5;
+                    Space = 1;
+                    break;
+                case VehicleType.MC:
+                    Rate = 10;
+                    Space = 2;
+                    break;
+                case VehicleType.Car:
+                    Rate = 20;
+                    Space = 4;
+                    break;
+                case VehicleType.Bus:
+                    Rate = 40;
+                    Space = 16;
+                    break;
+            }
+        }
+
+        public double CalculateParkingCost()
+        {
+            TimeSpan parkedDuration = DateTime.Now - ParkingStartTime;
+            return Space * Rate * parkedDuration.TotalHours;
+        }
     }
 
-}
-
-
-
-class MC : Vehicle
-{
-    public override string? RegNumber { get; set; }
-    public override string Type { get; set; } = "MC";
-    public override double Rate { get; set; } = 10;
-    public override double Space { get; set; } = 2;
-
-    public MC(string regnumber)
+    class Bike : Vehicle
     {
-        this.RegNumber = regnumber;
+        public Bike(string regNumber) : base(regNumber, VehicleType.Bike) { }
     }
 
-}
-
-class Car : Vehicle
-{
-    public override string? RegNumber { get; set; }
-    public override string Type { get; set; } = "Car";
-    public override double Rate { get; set; } = 20;
-    public override double Space { get; set; } = 4;
-
-    public Car(string regnumber)
+    class MC : Vehicle
     {
-        this.RegNumber = regnumber;
+        public MC(string regNumber) : base(regNumber, VehicleType.MC) { }
     }
 
-}
-
-class Bus : Vehicle
-{
-    public override string? RegNumber { get; set; }
-    public override string Type { get; set; } = "Bus";
-    public override double Rate { get; set; } = 40;
-    public override double Space { get; set; } = 16;
-
-    public Bus(string regnumber)
+    class Car : Vehicle
     {
-        this.RegNumber = regnumber;
+        public Car(string regNumber) : base(regNumber, VehicleType.Car) { }
     }
 
+    class Bus : Vehicle
+    {
+        public Bus(string regNumber) : base(regNumber, VehicleType.Bus) { }
+    }
 }
-
-
