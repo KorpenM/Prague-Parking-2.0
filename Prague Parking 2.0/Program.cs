@@ -1,16 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using Spectre.Console;
 using PragueParking_2._0;
+using System.IO;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Spectre.Console;
+using System.Xml;
+using PragueParking_2;
 
 internal class Program
 {
-    //Create new Garage and initialize
     private static Garage garage = new Garage();
 
     private static void Main()
     {
+        garage.LoadSettings();
+        garage.InitializeGarage();
+
         string menuChoice;
+
         do
         {
             Console.Clear();
@@ -31,10 +39,10 @@ internal class Program
                 "Park Vehicle",
                 "Retrieve/Remove Vehicle",
                 "Move Vehicle",
-                "Search Vehicle",
-                //"Show Parking Spots",
+                "Search",
                 "Show all registered vehicles",
-                "Optimize parking",
+                "Edit Parking Settings", // Json config
+                "Show Current/Updated Settings",
                 "Exit"
             };
 
@@ -56,17 +64,17 @@ internal class Program
                 case "Move Vehicle":
                     MoveVehicle();
                     break;
-                case "Search Vehicle":
+                case "Search":
                     SearchVehicle();
                     break;
-                //case "Show Parking Spots":
-                //    ShowParking();
-                //    break;
                 case "Show all registered vehicles":
                     ShowRegisteredVehicles();
                     break;
-                case "Optimize parking":
-                    OptimizeParking();
+                case "Edit Parking Settings":
+                    EditSettings();
+                    break;
+                case "Show Current/Updated Settings":
+                    ShowSettings();
                     break;
                 case "Exit":
                     Console.Write("\nExiting program...");
@@ -76,6 +84,54 @@ internal class Program
                     break;
             }
         } while (menuChoice != "Exit"); // Program closes only at case "Exit"
+    }
+
+    private static void EditSettings()
+    {
+        Console.Clear();
+        AnsiConsole.Markup("[bold yellow]Editing Parking Settings:[/]\n");
+
+        garage.settings.TotalSpots = AnsiConsole.Ask<int>("Enter total parking spots: ");
+        garage.settings.FreeParkingMinutes = AnsiConsole.Ask<int>("Enter free parking minutes: ");
+
+        // Check and initiate VehicleTypes if it's null
+        if (garage.settings.VehicleTypes == null)
+        {
+            garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
+        }
+
+        foreach (var vehicleType in garage.settings.VehicleTypes)
+        {
+            AnsiConsole.Markup($"\n--- [bold cyan]{vehicleType.Key} Settings ---[/]");
+            vehicleType.Value.SpaceRequired = AnsiConsole.Ask<int>("Enter space required: ");
+            vehicleType.Value.RatePerHour = AnsiConsole.Ask<int>("Enter rate per hour: ");
+            vehicleType.Value.AllowedSpots = AnsiConsole.Ask<string>("Enter allowed spots: ");
+            vehicleType.Value.NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>("Enter number of vehicles per spot: ");
+        }
+
+        garage.SaveSettings();
+    }
+
+    private static void ShowSettings()
+    {
+        Console.Clear();
+        AnsiConsole.Markup("[bold yellow]Current Parking Settings:[/]\n");
+
+        string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+
+        if (File.Exists(jsonFilePath))
+        {
+            // Read and show JSON file
+            string json = File.ReadAllText(jsonFilePath);
+            var formattedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(json), Newtonsoft.Json.Formatting.Indented);
+            AnsiConsole.Markup(formattedJson);
+        }
+        else
+        {
+            AnsiConsole.Markup("[red]Config file not found. Default settings may be in use.[/]");
+        }
+        AnsiConsole.Markup("\n[green]Press Enter to return to the menu...[/]");
+        Console.ReadLine();
     }
 
     private static void AddVehicle()
@@ -219,14 +275,6 @@ internal class Program
     {
         Console.Clear();
         garage.PrintRegisteredVehicles();
-        Console.Write("\nPress random key to continue...");
-        Console.ReadKey();
-    }
-
-    private static void OptimizeParking()
-    {
-        Console.Clear();
-        garage.OptimizeParking();
         Console.Write("\nPress random key to continue...");
         Console.ReadKey();
     }

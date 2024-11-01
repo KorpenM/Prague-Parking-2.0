@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using Spectre.Console;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Xml;
 
 namespace PragueParking_2._0
 {
@@ -8,10 +12,16 @@ namespace PragueParking_2._0
     {
         private int capacity = 100;
         public List<ParkingSpot> garageList = new List<ParkingSpot>();
+        public ParkingSettings settings; // Store settings from JSON
 
         public Garage() // Constructor for Garage
         {
             InitializeGarage();
+            LoadSettings(); // Load settings from JSON
+
+            // Debug: check for duplicates or incorrect count
+            // Console.WriteLine("Total parking spots: " + garageList.Count);
+            // Console.WriteLine("Unique IDs count: " + new HashSet<int>(garageList.Select(s => s.ID)).Count);
         }
 
         public void InitializeGarage() // Add parking spots to the garage
@@ -24,6 +34,49 @@ namespace PragueParking_2._0
             }
             // Debug
             //Console.WriteLine($"Garage initialized with {garageList.Count} parking spots.");
+        }
+
+        public void LoadSettings()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+
+            if (File.Exists(jsonFilePath))
+            {
+                string json = File.ReadAllText(jsonFilePath);
+                settings = JsonConvert.DeserializeObject<ParkingSettings>(json);
+                Console.WriteLine("Settings loaded successfully.");
+
+                // Kontrollera om VehicleTypes är null och initiera vid behov
+                if (settings.VehicleTypes == null)
+                {
+                    settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Config file not found. Using default settings.");
+
+                settings = new ParkingSettings
+                {
+                    TotalSpots = 100,
+                    FreeParkingMinutes = 10,
+                    VehicleTypes = new Dictionary<string, VehicleTypeInfo>
+            {
+                { "Bike", new VehicleTypeInfo { SpaceRequired = 1, RatePerHour = 5, AllowedSpots = "All spots" }},
+                { "MC", new VehicleTypeInfo { SpaceRequired = 2, RatePerHour = 10, AllowedSpots = "All spots" }},
+                { "Car", new VehicleTypeInfo { SpaceRequired = 4, RatePerHour = 20, AllowedSpots = "All spots" }},
+                { "Bus", new VehicleTypeInfo { SpaceRequired = 16, RatePerHour = 80, AllowedSpots = "Spots 1-50 only" }},
+            }
+                };
+            }
+        }
+
+        public void SaveSettings()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+            string json = JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented); // Indenterad format
+            File.WriteAllText(jsonFilePath, json);
+            Console.WriteLine("Settings saved successfully.");
         }
 
         public bool ParkVehicle(Vehicle vehicle)
@@ -248,7 +301,7 @@ namespace PragueParking_2._0
                 {
                     Console.WriteLine();
                 }
-                
+
                 ParkingSpot spot = garageList[i];
 
                 if (!spot.Occupied)
