@@ -1,10 +1,12 @@
 using System.Reflection.Metadata.Ecma335;
 
-namespace PragueParking_2._0
+namespace Prague_Parking_2._0
 {
     internal class ParkingSpot
     {
 
+        //Remoce fields
+       
         private int spotCapacity = 4;
 
         private int available;
@@ -17,13 +19,14 @@ namespace PragueParking_2._0
 
         public List<Vehicle> Spots { get; set; }
         public int ID { get; set; }
+
+
         public Vehicle? ParkedVehicle { get; set; }
 
-        public int SpotCapacity
-        {
-            get { return spotCapacity; }
-            set { spotCapacity = value; }
-        }
+        public int SpotCapacity { get; set; } = 4;
+
+
+
 
         public int UsedCapacity
         {
@@ -31,12 +34,18 @@ namespace PragueParking_2._0
             set { usedCapacity = value; }
         }
 
+
+
         public bool Occupied { get; set; } = false;
+
 
         public void SetVehicleSpace(Vehicle vehicle)
         {
             vehicleSpace = vehicle.Space;
         }
+
+
+        //Set value in other method
 
         public int Available
         {
@@ -48,7 +57,9 @@ namespace PragueParking_2._0
                 }
                 else
                 {
-                    return available = spotCapacity - usedCapacity;
+
+                    return available = SpotCapacity - usedCapacity;
+
                 }
             }
             set { available = value; }
@@ -57,14 +68,17 @@ namespace PragueParking_2._0
         public ParkingSpot(int id)
         {
             //this.ParkedVehicle = vehicle;
-            this.ID = id;
-            this.Occupied = false;
-            this.Spots = new List<Vehicle>();
+
+            ID = id;
+            Occupied = false;
+            Spots = new List<Vehicle>();
             //this.Available = 4;
-            this.SpotCapacity = spotCapacity;
-            this.UsedCapacity = usedCapacity;
+            SpotCapacity = spotCapacity;
+            UsedCapacity = usedCapacity;
 
         }
+
+
 
         public virtual void ParkVehicle()
         {
