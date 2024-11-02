@@ -91,7 +91,7 @@ namespace PragueParking_2._0
                         spots.Add(vehicle);
                         if (parkingSpot.Available == 0) { parkingSpot.Occupied = true; }
                         Console.WriteLine($"{vehicle.Type} with reg {vehicle.RegNumber} has been parked on spot {parkingSpot.ID + 1}.");
-                        Console.WriteLine($"This spot now has now used {parkingSpot.UsedCapacity}. There are {parkingSpot.Available} spaces available.");
+                        Console.WriteLine($"This spot now has used {parkingSpot.UsedCapacity} parking spaces. There are {parkingSpot.Available} spaces available.");
                         break;
                     }
                     else if (vehicle.Space > capacity || vehicle.Space > available || parkingSpot.Occupied) //Implementation for buss?
@@ -236,32 +236,6 @@ namespace PragueParking_2._0
             return true; // Fordonet flyttat
         }
 
-        public void PrintGarage()
-        {
-            Console.WriteLine("=== Parking Spots ===\n");
-
-            foreach (ParkingSpot spot in garageList)
-            {
-
-                if (spot.Occupied)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"Parking Spot {spot.ID + 1}: Occupied by {spot.UsedCapacity} vehicles");
-                }
-                else if (spot.UsedCapacity > 0)
-                {
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"Parking Spot {spot.ID + 1}: Spaces available: {spot.Available} of {spot.SpotCapacity}");
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine($"Parking Spot {spot.ID + 1}: Spaces available: {spot.Available} of {spot.SpotCapacity}");
-                }
-                Console.ResetColor();
-            }
-        }
-
         public void ShowColorParkingSpots()
         {
             int spotsPerRow = 10; // Number of parking spots per row
@@ -276,28 +250,18 @@ namespace PragueParking_2._0
 
                 ParkingSpot spot = garageList[i];
 
-                if (!spot.Occupied)
+                if (spot.Available == 4)
                 {
                     Console.ForegroundColor = ConsoleColor.Green; // Free
                 }
-                //else // Spot occupied
-                //{
-                //    string spotString = spot.ParkedVehicle.Type.ToString();
-                //    int bikeIndex = spotString.IndexOf("Bike");
-                //    int mcIndex = spotString.IndexOf("MC");
-                //    int carIndex = spotString.IndexOf("Car");
-                //    int busIndex = spotString.IndexOf("Bus");
-
-                //    if (bikeIndex != -1 && bikeIndex < 3 || mcIndex != -1 && mcIndex < 1 || bikeIndex == 0 && mcIndex == 0)
-                //    {
-                //        Console.ForegroundColor = ConsoleColor.Yellow; //Partly occupied
-                //    }
-                //    else if (carIndex != -1 || bikeIndex == 3 || mcIndex == 1 || busIndex != -1 || bikeIndex == 1 && mcIndex == 0)
-                //    {
-                //        Console.ForegroundColor = ConsoleColor.Red; // Occupied
-                //    }
-                //}
-
+                if (spot.Available > 0 && spot.Available < 4)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                }
+                else if (spot.Available == 0)
+                {
+                    Console.ForegroundColor= ConsoleColor.Red;
+                }
                 Console.Write($"[{spot.ID + 1:D3}] "); // Format spot ID
                 Console.ResetColor();
             }
@@ -313,7 +277,7 @@ namespace PragueParking_2._0
 
             foreach (var spot in garageList)
             {
-                if (spot.Occupied)
+                if (spot.Available < 4)
                 {
                     Console.WriteLine($"Spot {spot.ID + 1}: {spot.ParkedVehicle.Type} - Reg: {spot.ParkedVehicle.RegNumber}");
                     hasVehicles = true;
@@ -324,7 +288,6 @@ namespace PragueParking_2._0
             {
                 Console.WriteLine("No registered vehicles found.");
             }
-
             Console.ResetColor();
         }
     }

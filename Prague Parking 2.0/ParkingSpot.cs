@@ -17,17 +17,13 @@ namespace PragueParking_2._0
 
         public List<Vehicle> Spots { get; set; }
         public int ID { get; set; }
-
         public Vehicle? ParkedVehicle { get; set; }
 
         public int SpotCapacity
-
         {
             get { return spotCapacity; }
             set { spotCapacity = value; }
         }
-
-
 
         public int UsedCapacity
         {
@@ -35,15 +31,13 @@ namespace PragueParking_2._0
             set { usedCapacity = value; }
         }
 
-
-
         public bool Occupied { get; set; } = false;
-
 
         public void SetVehicleSpace(Vehicle vehicle)
         {
             vehicleSpace = vehicle.Space;
         }
+
         public int Available
         {
             get
@@ -60,11 +54,6 @@ namespace PragueParking_2._0
             set { available = value; }
         }
 
-
-
-
-
-
         public ParkingSpot(int id)
         {
             //this.ParkedVehicle = vehicle;
@@ -76,8 +65,6 @@ namespace PragueParking_2._0
             this.UsedCapacity = usedCapacity;
 
         }
-
-
 
         public virtual void ParkVehicle()
         {
@@ -105,24 +92,5 @@ namespace PragueParking_2._0
                        vehicle.Type == "Car";
             }
         }
-
-
-
-
-        /*public bool CanAcceptVehicle(Vehicle vehicle)
-        {
-            if (ID < 50)
-            {
-                return true;
-            }
-            else
-            {
-                // Spots 51-100 (ID 50-99) can only accept Bike, MC and Car
-                return vehicle.TypeOfVehicle == VehicleType.Bike ||
-                       vehicle.TypeOfVehicle == VehicleType.MC ||
-                       vehicle.TypeOfVehicle == VehicleType.Car;
-            }
-        }*/
-
     }
 }

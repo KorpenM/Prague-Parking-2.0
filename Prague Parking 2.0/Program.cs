@@ -185,7 +185,6 @@ internal class Program
         {
             Console.WriteLine("There is no available parking spots");
         }
-
         Console.Write("\nPress random key to continue...");
         Console.ReadKey();
     }

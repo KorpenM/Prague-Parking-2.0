@@ -16,6 +16,7 @@ public abstract class Vehicle : ICalculateParkingCost
     {
 
     }
+
     public double CalculateParkingCost(int Space, int Rate, DateTime ParkingStartTime)
     {
         TimeSpan parkedDuration = DateTime.Now - ParkingStartTime;
