@@ -12,11 +12,13 @@ public abstract class Vehicle : ICalculateParkingCost
     public abstract int Space { get; set; }
     public DateTime ParkingStartime { get; set; } = DateTime.Now;
     public abstract double CalculateParkingCost(DateTime exitTime);
+
 }
 
 
 class Bike : Vehicle
 {
+
     public string? RegNumber { get; set; }
     //public string Type { get; set; } = "Bike";
     public override int Rate { get; set; } = 5;
@@ -26,6 +28,7 @@ class Bike : Vehicle
     {
         RegNumber = regNumber;
     }
+
 
     public override double CalculateParkingCost(DateTime exitTime )
     {
@@ -49,6 +52,7 @@ class MC : Vehicle
         RegNumber = regNumber;
     }
 
+
     public override double CalculateParkingCost(DateTime exitTime)
     {
         TimeSpan parkedDuration = DateTime.Now - exitTime;
@@ -59,6 +63,7 @@ class MC : Vehicle
 
 class Car : Vehicle
 {
+
     public string? RegNumber { get; set; }
     //public override string Type { get; set; } = "Car";
     public override int Rate { get; set; } = 20;
@@ -78,6 +83,7 @@ class Car : Vehicle
 
 class Bus : Vehicle
 {
+
     public  string? RegNumber { get; set; }
     //public override string Type { get; set; } = "Bus";
     public override int Rate { get; set; } = 40;
@@ -93,5 +99,4 @@ class Bus : Vehicle
         return Space * Rate * parkedDuration.TotalHours;
     }
 }
-
 

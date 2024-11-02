@@ -1,4 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Prague_Parking_2._0
 {
@@ -7,6 +7,7 @@ namespace Prague_Parking_2._0
 
         //Remoce fields
        
+        private int spotCapacity = 4;
 
         private int available;
 
@@ -18,6 +19,7 @@ namespace Prague_Parking_2._0
 
         public List<Vehicle> Spots { get; set; }
         public int ID { get; set; }
+
 
         public Vehicle? ParkedVehicle { get; set; }
 
@@ -42,7 +44,9 @@ namespace Prague_Parking_2._0
             vehicleSpace = vehicle.Space;
         }
 
+
         //Set value in other method
+
         public int Available
         {
             get
@@ -53,20 +57,18 @@ namespace Prague_Parking_2._0
                 }
                 else
                 {
+
                     return available = SpotCapacity - usedCapacity;
+
                 }
             }
             set { available = value; }
         }
 
-
-
-
-
-
         public ParkingSpot(int id)
         {
             //this.ParkedVehicle = vehicle;
+
             ID = id;
             Occupied = false;
             Spots = new List<Vehicle>();
@@ -104,24 +106,5 @@ namespace Prague_Parking_2._0
                        vehicle.Type == "Car";
             }
         }
-
-
-
-
-        /*public bool CanAcceptVehicle(Vehicle vehicle)
-        {
-            if (ID < 50)
-            {
-                return true;
-            }
-            else
-            {
-                // Spots 51-100 (ID 50-99) can only accept Bike, MC and Car
-                return vehicle.TypeOfVehicle == VehicleType.Bike ||
-                       vehicle.TypeOfVehicle == VehicleType.MC ||
-                       vehicle.TypeOfVehicle == VehicleType.Car;
-            }
-        }*/
-
     }
 }

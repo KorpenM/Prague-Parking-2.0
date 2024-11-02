@@ -1,5 +1,10 @@
-﻿using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using Spectre.Console;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Xml;
 
 namespace Prague_Parking_2._0
 {
@@ -7,9 +12,14 @@ namespace Prague_Parking_2._0
     {
         private int capacity = 100;
         public List<ParkingSpot> garageList = new List<ParkingSpot>();
+        public ParkingSettings settings; // Store settings from JSON
 
         public Garage() // Constructor for Garage
         {
+            LoadSettings(); // Load settings from JSON
+
+            //InitializeGarage();
+
             if (garageList.Count > 0) return;
 
             for (int i = 0; i < capacity; i++)
@@ -19,7 +29,54 @@ namespace Prague_Parking_2._0
         }
 
 
-        //Park method
+
+   
+
+
+        public void LoadSettings()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+
+            if (File.Exists(jsonFilePath))
+            {
+                string json = File.ReadAllText(jsonFilePath);
+                settings = JsonConvert.DeserializeObject<ParkingSettings>(json);
+                Console.WriteLine("Settings loaded successfully.");
+
+                // Kontrollera om VehicleTypes är null och initiera vid behov
+                if (settings.VehicleTypes == null)
+                {
+                    settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Config file not found. Using default settings.");
+
+                settings = new ParkingSettings
+                {
+                    TotalSpots = 100,
+                    FreeParkingMinutes = 10,
+                    VehicleTypes = new Dictionary<string, VehicleTypeInfo>
+            {
+                { "Bike", new VehicleTypeInfo { SpaceRequired = 1, RatePerHour = 5, AllowedSpots = "All spots" }},
+                { "MC", new VehicleTypeInfo { SpaceRequired = 2, RatePerHour = 10, AllowedSpots = "All spots" }},
+                { "Car", new VehicleTypeInfo { SpaceRequired = 4, RatePerHour = 20, AllowedSpots = "All spots" }},
+                { "Bus", new VehicleTypeInfo { SpaceRequired = 16, RatePerHour = 80, AllowedSpots = "Spots 1-50 only" }},
+            }
+                };
+            }
+        }
+
+        public void SaveSettings()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+            string json = JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented); // Indenterad format
+            File.WriteAllText(jsonFilePath, json);
+            Console.WriteLine("Settings saved successfully.");
+        }
+
+      
         public bool ParkVehicle(Vehicle vehicle)
         {
             if (vehicle.Type != "Bus")
@@ -29,6 +86,7 @@ namespace Prague_Parking_2._0
                 {
                     var parkingSpot = garageList[i];
                     int capacity = parkingSpot.SpotCapacity;
+                    int used = parkingSpot.UsedCapacity;
                     int available = parkingSpot.Available;
                     var spots = parkingSpot.Spots;
 
@@ -40,7 +98,9 @@ namespace Prague_Parking_2._0
                         spots.Add(vehicle);
                         if (parkingSpot.Available == 0) { parkingSpot.Occupied = true; }
                         Console.WriteLine($"{vehicle.Type} with reg {vehicle.RegNumber} has been parked on spot {parkingSpot.ID + 1}.");
+
                         Console.WriteLine($"This spot now has now used {parkingSpot.UsedCapacity}. There are {parkingSpot.Available} spaces available.");
+
                         break;
                     }
                     else if (vehicle.Space > capacity || vehicle.Space > available || parkingSpot.Occupied) //Implementation for buss?
@@ -186,6 +246,7 @@ namespace Prague_Parking_2._0
             return true; // Fordonet flyttat
         }
 
+
         public void PrintGarage()
         {
             Console.WriteLine("=== Parking Spots ===\n");
@@ -253,40 +314,23 @@ namespace Prague_Parking_2._0
 
                 ParkingSpot spot = garageList[i];
 
-                if (!spot.Occupied)
+                if (spot.Available == 4)
                 {
                     Console.ForegroundColor = ConsoleColor.Green; // Free
                 }
-                else // Spot occupied
+                if (spot.Available > 0 && spot.Available < 4)
                 {
-                    string spotString = spot.ParkedVehicle.Type.ToString();
-                    int bikeIndex = spotString.IndexOf("Bike");
-                    int mcIndex = spotString.IndexOf("MC");
-                    int carIndex = spotString.IndexOf("Car");
-                    int busIndex = spotString.IndexOf("Bus");
-
-                    if (bikeIndex != -1 && bikeIndex < 3 || mcIndex != -1 && mcIndex < 1 || bikeIndex == 0 && mcIndex == 0)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Yellow; //Partly occupied
-                    }
-                    else if (carIndex != -1 || bikeIndex == 3 || mcIndex == 1 || busIndex != -1 || bikeIndex == 1 && mcIndex == 0)
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red; // Occupied
-                    }
+                    Console.ForegroundColor = ConsoleColor.Yellow;
                 }
-
+                else if (spot.Available == 0)
+                {
+                    Console.ForegroundColor= ConsoleColor.Red;
+                }
                 Console.Write($"[{spot.ID + 1:D3}] "); // Format spot ID
                 Console.ResetColor();
             }
-
             Console.WriteLine("\n");
         }
-
-        //public void PrintColorGarage()
-        //{
-
-        //}
-
 
         public void PrintRegisteredVehicles()
         {
@@ -297,7 +341,7 @@ namespace Prague_Parking_2._0
 
             foreach (var spot in garageList)
             {
-                if (spot.Occupied)
+                if (spot.Available < 4)
                 {
                     Console.WriteLine($"Spot {spot.ID + 1}: {spot.ParkedVehicle.Type} - Reg: {spot.ParkedVehicle.RegNumber}");
                     hasVehicles = true;
@@ -308,9 +352,9 @@ namespace Prague_Parking_2._0
             {
                 Console.WriteLine("No registered vehicles found.");
             }
-
             Console.ResetColor();
         }
+
 
         //Optimize - find vehicle type, compare to other parking spaces, and then move them if possible
         public void OptimizeParking()
@@ -367,5 +411,6 @@ namespace Prague_Parking_2._0
 
 
         }
+
     }
 }
