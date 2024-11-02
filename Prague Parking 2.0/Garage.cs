@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PragueParking_2._0
+namespace Prague_Parking_2._0
 {
     internal class Garage
     {
@@ -10,9 +10,7 @@ namespace PragueParking_2._0
 
         public Garage() // Constructor for Garage
         {
-            //InitializeGarage();
             if (garageList.Count > 0) return;
-
 
             for (int i = 0; i < capacity; i++)
             {
@@ -31,7 +29,6 @@ namespace PragueParking_2._0
                 {
                     var parkingSpot = garageList[i];
                     int capacity = parkingSpot.SpotCapacity;
-                    int used = parkingSpot.UsedCapacity;
                     int available = parkingSpot.Available;
                     var spots = parkingSpot.Spots;
 
@@ -54,7 +51,7 @@ namespace PragueParking_2._0
                     {
                         Console.WriteLine("No space left");
                     }
-                    
+
                 }
             }
             return true;
@@ -196,12 +193,12 @@ namespace PragueParking_2._0
             foreach (ParkingSpot spot in garageList)
             {
 
-                if (spot.Occupied) 
+                if (spot.Occupied)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                     Console.WriteLine($"Parking Spot {spot.ID + 1}: Occupied by {spot.UsedCapacity} vehicles");
                 }
-                else if (spot.UsedCapacity > 0 )
+                else if (spot.UsedCapacity > 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"Parking Spot {spot.ID + 1}: Spaces available: {spot.Available} of {spot.SpotCapacity}");

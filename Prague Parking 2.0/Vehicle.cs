@@ -1,39 +1,36 @@
-﻿namespace PragueParking_2._0;
+﻿namespace Prague_Parking_2._0;
 
 public interface ICalculateParkingCost
 {
-    public double CalculateParkingCost(int Space, int Rate, DateTime ParkingStartTime);
+    public double CalculateParkingCost(DateTime exitTime);
 }
 public abstract class Vehicle : ICalculateParkingCost
 {
-    public abstract string? RegNumber { get; set; }
-    public abstract string Type { get; set; }
+    public  string? RegNumber { get; set; }
+    //public abstract string Type { get; set; }
     public abstract int Rate { get; set; }
     public abstract int Space { get; set; }
-    public DateTime ParkingStartTime { get; set; }
-
-    public Vehicle()
-    {
-
-    }
-    public double CalculateParkingCost(int Space, int Rate, DateTime ParkingStartTime)
-    {
-        TimeSpan parkedDuration = DateTime.Now - ParkingStartTime;
-        return Space * Rate * parkedDuration.TotalHours;
-    }
+    public DateTime ParkingStartime { get; set; } = DateTime.Now;
+    public abstract double CalculateParkingCost(DateTime exitTime);
 }
 
 
 class Bike : Vehicle
 {
-    public override string? RegNumber { get; set; }
-    public override string Type { get; set; } = "Bike";
+    public string? RegNumber { get; set; }
+    //public string Type { get; set; } = "Bike";
     public override int Rate { get; set; } = 5;
     public override int Space { get; set; } = 1;
 
-    public Bike(string regnumber)
+    public Bike(string? regNumber)
     {
-        this.RegNumber = regnumber;
+        RegNumber = regNumber;
+    }
+
+    public override double CalculateParkingCost(DateTime exitTime )
+    {
+        TimeSpan parkedDuration = DateTime.Now - exitTime;
+        return Space * Rate * parkedDuration.TotalHours;
     }
 
 }
@@ -42,44 +39,59 @@ class Bike : Vehicle
 
 class MC : Vehicle
 {
-    public override string? RegNumber { get; set; }
-    public override string Type { get; set; } = "MC";
+    public string? RegNumber { get; set; }
+    //public override string Type { get; set; } = "MC";
     public override int Rate { get; set; } = 10;
     public override int Space { get; set; } = 2;
 
-    public MC(string regnumber)
+    public MC(string? regNumber)
     {
-        this.RegNumber = regnumber;
+        RegNumber = regNumber;
+    }
+
+    public override double CalculateParkingCost(DateTime exitTime)
+    {
+        TimeSpan parkedDuration = DateTime.Now - exitTime;
+        return Space * Rate * parkedDuration.TotalHours;
     }
 
 }
 
 class Car : Vehicle
 {
-    public override string? RegNumber { get; set; }
-    public override string Type { get; set; } = "Car";
+    public string? RegNumber { get; set; }
+    //public override string Type { get; set; } = "Car";
     public override int Rate { get; set; } = 20;
     public override int Space { get; set; } = 4;
 
-    public Car(string regnumber)
+    public Car(string? regNumber)
     {
-        this.RegNumber = regnumber;
+        RegNumber = regNumber;
+    }
+    public override double CalculateParkingCost(DateTime exitTime)
+    {
+        TimeSpan parkedDuration = DateTime.Now - exitTime;
+        return Space * Rate * parkedDuration.TotalHours;
     }
 
 }
 
 class Bus : Vehicle
 {
-    public override string? RegNumber { get; set; }
-    public override string Type { get; set; } = "Bus";
+    public  string? RegNumber { get; set; }
+    //public override string Type { get; set; } = "Bus";
     public override int Rate { get; set; } = 40;
     public override int Space { get; set; } = 16;
 
-    public Bus(string regnumber)
+    public Bus(string? regNumber)
     {
-        this.RegNumber = regnumber;
+        RegNumber = regNumber;
     }
-
+    public override double CalculateParkingCost(DateTime exitTime)
+    {
+        TimeSpan parkedDuration = DateTime.Now - exitTime;
+        return Space * Rate * parkedDuration.TotalHours;
+    }
 }
 
 
