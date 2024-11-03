@@ -17,6 +17,7 @@ namespace Prague_Parking_2._0
         public UI(Garage garage)
         {
 
+            garage.LoadParkingData();
 
             do
             {
@@ -42,6 +43,7 @@ namespace Prague_Parking_2._0
                 "Show All Registered Vehicles",
                 "Edit Parking Settings", // Json config
                 "Show Current Settings",
+                "Show Parking Data",
                 "Exit"
             };
 
@@ -56,24 +58,34 @@ namespace Prague_Parking_2._0
                 {
                     case "Park Vehicle":
                         AddVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Retrieve Vehicle":
                         RemoveVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Move Vehicle":
                         MoveVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Search Vehicle":
                         SearchVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Show All Registered Vehicles":
                         ShowRegisteredVehicles(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Edit Parking Settings":
                         EditSettings(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Show Current Settings":
                         ShowSettings(garage);
+                        garage.SaveParkingData();
+                        break;
+                    case "Show Parking Data":
+                        garage.ShowParkingData();
                         break;
                     case "Exit":
                         Console.Write("\nExiting program...");

@@ -4,7 +4,6 @@ using System;
 using Spectre.Console;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Xml;
 using PragueParking_2._0;
 using System.Runtime.CompilerServices;
 
@@ -37,6 +36,133 @@ namespace Prague_Parking_2._0
                 garageList.Add(new ParkingSpot(i));
             }
         }
+
+
+        public void LoadParkingData()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
+
+            if (File.Exists(jsonFilePath))
+            {
+                string json = File.ReadAllText(jsonFilePath);
+                var parkingData = JsonConvert.DeserializeObject<ParkingData>(json);
+
+                foreach (var spotData in parkingData.ParkingSpots)
+                {
+                    var parkingSpot = garageList[spotData.ID];
+                    parkingSpot.Spots.Clear();
+
+                    foreach (var vehicleData in spotData.Vehicles)
+                    {
+                        Vehicle vehicle = vehicleData.Type switch
+                        {
+                            "Bike" => new Bike(vehicleData.RegNumber),
+                            "MC" => new MC(vehicleData.RegNumber),
+                            "Car" => new Car(vehicleData.RegNumber),
+                            "Bus" => new Bus(vehicleData.RegNumber),
+                            _ => throw new InvalidOperationException("Unknown vehicle type.")
+                        };
+
+                        vehicle.ParkingStartime = vehicleData.ParkingStartTime;
+                        parkingSpot.Spots.Add(vehicle);
+                        parkingSpot.UpdateSpot(vehicle);
+                    }
+                }
+
+                Console.WriteLine("Parking data loaded successfully.");
+            }
+            else
+            {
+                Console.WriteLine("Parking data file not found. No previous parking data loaded.");
+            }
+        }
+
+        public void SaveParkingData()
+        {
+            var parkingData = new ParkingData();
+
+            foreach (var spot in garageList)
+            {
+                var spotData = new ParkingSpotData
+                {
+                    ID = spot.ID,
+                    Vehicles = spot.Spots.Select(v => new VehicleData
+                    {
+                        RegNumber = v.RegNumber,
+                        Type = v.GetType().Name,
+                        ParkingStartTime = v.ParkingStartime
+                    }).ToList()
+                };
+
+                parkingData.ParkingSpots.Add(spotData);
+            }
+
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
+            string json = JsonConvert.SerializeObject(parkingData, Formatting.Indented);
+            File.WriteAllText(jsonFilePath, json);
+            Console.WriteLine("Parking data saved successfully.");
+
+            // ShowParkingData();
+        }
+
+
+        public void ShowParkingData()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
+
+            if (File.Exists(jsonFilePath))
+            {
+                string json = File.ReadAllText(jsonFilePath);
+                var parkingData = JsonConvert.DeserializeObject<ParkingData>(json);
+
+                Console.WriteLine("Current parking data:");
+
+                foreach (var spot in parkingData.ParkingSpots)
+                {
+                    Console.WriteLine($"Spot ID: {spot.ID + 1}");
+                    if (spot.Vehicles != null && spot.Vehicles.Count > 0)
+                    {
+                        foreach (var vehicle in spot.Vehicles)
+                        {
+                            Console.WriteLine($"  Vehicle: {vehicle.Type}, Reg Number: {vehicle.RegNumber}, Parking Start Time: {vehicle.ParkingStartTime}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("  No vehicles parked.");
+                    }
+                    Console.WriteLine(); // Blank line for better readability
+                }
+            }
+            else
+            {
+                Console.WriteLine("Parking data file not found.");
+            }
+
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
+        }
+
+
+        /*public void ShowParkingData()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
+
+            if (File.Exists(jsonFilePath))
+            {
+                string json = File.ReadAllText(jsonFilePath);
+                Console.WriteLine("Current parking data:");
+                Console.WriteLine(json);
+            }
+            else
+            {
+                Console.WriteLine("Parking data file not found.");
+            }
+
+            Console.WriteLine("....");
+            Console.ReadKey();
+        }*/
+
 
         public void LoadSettings()
         {
