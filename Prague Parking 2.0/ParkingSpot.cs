@@ -1,43 +1,92 @@
-﻿
-namespace PragueParking_2._0
+﻿using PragueParking_2._0;
+using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("GarageTest")]
+namespace Prague_Parking_2._0
 {
-    internal class ParkingSpot
+    public class ParkingSpot
     {
+        public int VehicleSpace { get; set; }
+
+        public List<Vehicle> Spots { get; set; }
         public int ID { get; set; }
-        public bool Occupied { get; set; }
+
         public Vehicle? ParkedVehicle { get; set; }
 
+        public int SpotCapacity { get; set; } = 4;
 
-        public ParkingSpot()
+        public bool Occupied { get; set; } = false;
+
+        public int UsedCapacity { get; set; } = 0;
+        public int Available { get; set; } = 4;
+
+        public void SetVehicleSpace(Vehicle vehicle)
         {
-            this.Occupied = false;
+            VehicleSpace = vehicle.Space;
         }
 
-        public virtual void ParkVehicle()
+        public ParkingSpot(int id)
         {
-            Console.WriteLine("ParkVehicle in ParkingSPot");
+            ID = id;
+            Spots = new List<Vehicle>();
         }
 
-        public bool CanAcceptVehicle(Vehicle vehicle)
+        public void ResetSpot()
         {
-            // Bus can only park at 1-50
-            if (vehicle.TypeOfVehicle == VehicleType.Bus && ID >= 50)
-            {
-                return false;
-            }
+            UsedCapacity = 0;
+            Available = SpotCapacity - UsedCapacity;
 
-            // Spots 0-49 can accept all vehicles
-            if (ID < 50)
+            if (Available > 0)
             {
-                return true;
-            }
-            else
-            {
-                // Spots 50-99 can only accept Bike, MC and Car
-                return vehicle.TypeOfVehicle == VehicleType.Bike ||
-                       vehicle.TypeOfVehicle == VehicleType.MC ||
-                       vehicle.TypeOfVehicle == VehicleType.Car;
+                Occupied = false;
             }
         }
+
+        public void UpdateSpot(Vehicle vehicle)
+        {
+            UsedCapacity += vehicle.Space;
+            Available = SpotCapacity - UsedCapacity;
+
+            if (Available == 0)
+            {
+                Occupied = true;
+            }
+        }
+
+
+        public override string ToString()
+        {
+            string info = "";
+
+            foreach (Vehicle vehicle in Spots)
+            {
+                return info = vehicle.RegNumber + " " + vehicle.Space + " " + vehicle.GetType().Name;
+            }
+
+            return info;
+        }
+
+        //public bool CanAcceptVehicle(Vehicle vehicle)
+        //{
+        //    // Bus can only park at spots 0-49
+        //    if (vehicle.Type == "Bus" && ID >= 50)
+        //    {
+        //        return false;
+        //    }
+
+        //    // Spots 0-49 can accept all vehicles
+        //    if (ID < 50)
+        //    {
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        // Spots 50-99 can only accept Bike, MC och Car
+        //        return vehicle.Type == "Bike" ||
+        //               vehicle.Type == "MC" ||
+        //               vehicle.Type == "Car";
+        //    }
+        //}
     }
 }

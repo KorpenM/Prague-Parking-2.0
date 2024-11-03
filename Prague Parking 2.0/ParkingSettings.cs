@@ -12,8 +12,6 @@ namespace PragueParking_2._0
         public Dictionary<string, VehicleTypeInfo> VehicleTypes { get; set; }
         public int FreeParkingMinutes { get; set; }
         public Instructions Instructions { get; set; }
-        public int WhichVehicle {  get; set; }
-
     }
 
     public class VehicleTypeInfo

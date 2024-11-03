@@ -1,76 +1,80 @@
-﻿namespace PragueParking_2._0
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("GarageTest")]
+namespace Prague_Parking_2._0;
+public interface ICalculateParkingCost
 {
-    public enum VehicleType
+    public double CalculateParkingCost(DateTime exitTime);
+    //public double CalculateParkingTime(DateTime exitTime);
+}
+public abstract class Vehicle : ICalculateParkingCost
+{
+    public abstract string RegNumber { get; set; }
+    public abstract int Rate { get; set; }
+    public abstract int Space { get; set; }
+    public DateTime ParkingStartime { get; set; } = DateTime.Now;
+    public abstract double CalculateParkingCost(DateTime exitTime);
+    public bool EndParking { get; set; } = false;
+    public string CalculateParkingTime(DateTime exitTime)
     {
-        Bike = 1,
-        MC = 2,
-        Car = 4,
-        Bus = 16,
+        TimeSpan parkedDuration = exitTime - ParkingStartime;
+        return parkedDuration.ToString(@"hh\:mm\:ss");
     }
 
-    internal class Vehicle
+    public bool SetEndPardking()
     {
-        public string RegNumber { get; set; }
-        public VehicleType TypeOfVehicle { get; set; }
-        public double Rate { get; set; }
-        public double Space { get; set; }
-        public DateTime ParkingStartTime { get; set; }
+        return EndParking = true;
+    }
+}
 
-        public Vehicle(string regNumber, VehicleType typeOfVehicle)
-        {
-            RegNumber = regNumber;
-            TypeOfVehicle = typeOfVehicle;
-            SetVehicleProperties(typeOfVehicle);
-            ParkingStartTime = DateTime.Now;
-        }
 
-        private void SetVehicleProperties(VehicleType typeOfVehicle)
-        {
-            switch (typeOfVehicle)
-            {
-                case VehicleType.Bike:
-                    Rate = 5;
-                    Space = 1;
-                    break;
-                case VehicleType.MC:
-                    Rate = 10;
-                    Space = 2;
-                    break;
-                case VehicleType.Car:
-                    Rate = 20;
-                    Space = 4;
-                    break;
-                case VehicleType.Bus:
-                    Rate = 40;
-                    Space = 16;
-                    break;
-            }
-        }
+public class Bike(string regNumber) : Vehicle
+{
 
-        public double CalculateParkingCost()
-        {
-            TimeSpan parkedDuration = DateTime.Now - ParkingStartTime;
-            return Space * Rate * parkedDuration.TotalHours;
-        }
+    public override string RegNumber { get; set; } = regNumber;
+    public override int Rate { get; set; } = 5;
+    public override int Space { get; set; } = 1;
+    public override double CalculateParkingCost(DateTime exitTime)
+    {
+        TimeSpan parkedDuration = DateTime.Now - exitTime;
+        return Space * Rate * parkedDuration.TotalHours;
+    }
+}
+
+public class MC(string regNumber) : Vehicle
+{
+    public override string RegNumber { get; set; } = regNumber;
+    public override int Rate { get; set; } = 10;
+    public override int Space { get; set; } = 2;
+    public override double CalculateParkingCost(DateTime exitTime)
+    {
+        TimeSpan parkedDuration = DateTime.Now - exitTime;
+        return Space * Rate * parkedDuration.TotalHours;
     }
 
-    class Bike : Vehicle
+}
+
+public class Car(string regNumber) : Vehicle
+{
+    public override string RegNumber { get; set; } = regNumber;
+    public override int Rate { get; set; } = 20;
+    public override int Space { get; set; } = 4;
+    public override double CalculateParkingCost(DateTime exitTime)
     {
-        public Bike(string regNumber) : base(regNumber, VehicleType.Bike) { }
+        TimeSpan parkedDuration = DateTime.Now - exitTime;
+        return Space * Rate * parkedDuration.TotalHours;
     }
 
-    class MC : Vehicle
-    {
-        public MC(string regNumber) : base(regNumber, VehicleType.MC) { }
-    }
+}
 
-    class Car : Vehicle
+public class Bus(string regNumber) : Vehicle
+{
+    public override string RegNumber { get; set; } = regNumber;
+    public override int Rate { get; set; } = 40;
+    public override int Space { get; set; } = 16;
+    public override double CalculateParkingCost(DateTime exitTime)
     {
-        public Car(string regNumber) : base(regNumber, VehicleType.Car) { }
-    }
-
-    class Bus : Vehicle
-    {
-        public Bus(string regNumber) : base(regNumber, VehicleType.Bus) { }
+        TimeSpan parkedDuration = DateTime.Now - exitTime;
+        return Space * Rate * parkedDuration.TotalHours;
     }
 }
