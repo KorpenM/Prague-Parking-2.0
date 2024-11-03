@@ -17,8 +17,6 @@ internal class Program
 
     private static void Main()
     {
-        
         garage.LoadSettings();
-
     }
 }

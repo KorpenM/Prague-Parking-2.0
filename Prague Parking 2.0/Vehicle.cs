@@ -23,7 +23,7 @@ public abstract class Vehicle : ICalculateParkingCost
 
     public bool SetEndPardking()
     {
-        return EndParking =  true;
+        return EndParking = true;
     }
 }
 
@@ -78,4 +78,3 @@ public class Bus(string regNumber) : Vehicle
         return Space * Rate * parkedDuration.TotalHours;
     }
 }
-
