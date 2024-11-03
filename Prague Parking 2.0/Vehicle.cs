@@ -52,7 +52,7 @@ class MC(string regNumber) : Vehicle
 
 }
 
-class Car(string regNumber) : Vehicle
+public class Car(string regNumber) : Vehicle
 {
     public override string RegNumber { get; set; } = regNumber;
     public override int Rate { get; set; } = 20;
