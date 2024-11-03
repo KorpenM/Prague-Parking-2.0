@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 
+
 namespace PragueParking_2._0
 {
     internal class Garage
@@ -28,7 +29,7 @@ namespace PragueParking_2._0
             // PrintGarage();
         }
 
-        public void LoadSettings()
+        /*public void LoadSettings()
         {
             string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
 
@@ -61,7 +62,50 @@ namespace PragueParking_2._0
             }
                 };
             }
+        }*/
+
+
+        public void LoadSettings()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+
+            if (File.Exists(jsonFilePath))
+            {
+                string json = File.ReadAllText(jsonFilePath);
+
+                // Deserialisera endast "parkingSettings" sektionen
+                JObject jsonObj = JObject.Parse(json);
+                var parkingSettingsJson = jsonObj["parkingSettings"];
+
+                settings = parkingSettingsJson?.ToObject<ParkingSettings>();
+
+                Console.WriteLine("Settings loaded successfully.");
+
+                if (settings.VehicleTypes == null)
+                {
+                    settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
+                }
+            }
+            else
+            {
+                Console.WriteLine("Config file not found. Using default settings.");
+
+                // Om config.json saknas, använd standardinställningar
+                settings = new ParkingSettings
+                {
+                    TotalSpots = 100,
+                    FreeParkingMinutes = 10,
+                    VehicleTypes = new Dictionary<string, VehicleTypeInfo>
+            {
+                { "Bike", new VehicleTypeInfo { SpaceRequired = 1, RatePerHour = 5, AllowedSpots = "All spots", NumberOfVehiclesPerSpot = 4 }},
+                { "MC", new VehicleTypeInfo { SpaceRequired = 2, RatePerHour = 10, AllowedSpots = "All spots", NumberOfVehiclesPerSpot = 2 }},
+                { "Car", new VehicleTypeInfo { SpaceRequired = 4, RatePerHour = 20, AllowedSpots = "All spots", NumberOfVehiclesPerSpot = 1 }},
+                { "Bus", new VehicleTypeInfo { SpaceRequired = 16, RatePerHour = 80, AllowedSpots = "Spots 1-50 only", NumberOfVehiclesPerSpot = 1 }},
+            }
+                };
+            }
         }
+
 
         public void SaveSettings()
         {
@@ -377,11 +421,6 @@ namespace PragueParking_2._0
             }
 
             Console.ResetColor();
-        }
-
-        public void OptimizeParking()
-        {
-
         }
     }
 }

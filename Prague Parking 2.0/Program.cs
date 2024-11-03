@@ -31,7 +31,6 @@ internal class Program
                 "Show Parking Spots",
                 "Show Parking Spots | COLOURED-GRID |",
                 "Show all registered vehicles",
-                "Optimize parking",
                 "Edit Parking Settings", // Json config
                 "Show Current/Updated Settings",
                 "Exit"
@@ -65,9 +64,6 @@ internal class Program
                     break;
                 case "Show all registered vehicles":
                     ShowRegisteredVehicles();
-                    break;
-                case "Optimize parking":
-                    OptimizeParking();
                     break;
                 case "Edit Parking Settings":
                     EditSettings();
@@ -137,6 +133,64 @@ internal class Program
         AnsiConsole.Markup("\n[green]Press Enter to return to the menu...[/]");
         Console.ReadLine();
     }
+
+    /*private static void ShowSettings()
+    {
+        Console.Clear();
+        AnsiConsole.Markup("[bold yellow]Current Parking Settings:[/]\n");
+
+        string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+
+        if (File.Exists(jsonFilePath))
+        {
+            string json = File.ReadAllText(jsonFilePath);
+            JObject jsonObj = JObject.Parse(json);
+
+            // Visa endast inställningarna under "parkingSettings"
+            var parkingSettingsJson = jsonObj["parkingSettings"];
+            if (parkingSettingsJson != null)
+            {
+                var formattedParkingSettings = JsonConvert.SerializeObject(parkingSettingsJson, Formatting.Indented);
+                AnsiConsole.Markup($"[bold cyan]Parking Settings:[/]\n{formattedParkingSettings}\n");
+            }
+            else
+            {
+                AnsiConsole.Markup("[red]No parking settings found in config file.[/]");
+            }
+
+            // Fråga användaren om de vill se ytterligare instruktioner
+            AnsiConsole.Markup("\n[bold green]Would you like to view additional instructions? (y/n):[/] ");
+            var input = Console.ReadLine();
+            if (input?.ToLower() == "y" && jsonObj["instructions"] != null)
+            {
+                AnsiConsole.Markup("\n[bold yellow]Instructions:[/]\n");
+
+                // Visa allmänna instruktioner och fordonstorleksinformation
+                AnsiConsole.Markup($"[bold]General:[/] {jsonObj["instructions"]["general"]}\n");
+
+                AnsiConsole.Markup("[bold]Vehicle Size Information:[/]\n");
+                foreach (var item in jsonObj["instructions"]["vehicleSizeInfo"])
+                {
+                    string vehicleType = item.Path.Replace("instructions.vehicleSizeInfo.", "");
+                    AnsiConsole.Markup($"[cyan]{vehicleType}:[/] {item}\n");
+                }
+
+                // Visa regler om de finns
+                if (jsonObj["instructions"]["rules"] != null)
+                {
+                    AnsiConsole.Markup($"\n[bold]Rules:[/] {jsonObj["instructions"]["rules"]}\n");
+                }
+            }
+        }
+        else
+        {
+            AnsiConsole.Markup("[red]Config file not found. Default settings may be in use.[/]");
+        }
+
+        AnsiConsole.Markup("\n[green]Press Enter to return to the menu...[/]");
+        Console.ReadLine();
+    }*/
+
 
     private static void AddVehicle()
     {
@@ -282,14 +336,6 @@ internal class Program
     {
         Console.Clear();
         garage.PrintRegisteredVehicles();
-        AnsiConsole.Markup("\n[green]Press random key to continue...[/]");
-        Console.ReadKey();
-    }
-
-    private static void OptimizeParking()
-    {
-        Console.Clear();
-        garage.OptimizeParking();
         AnsiConsole.Markup("\n[green]Press random key to continue...[/]");
         Console.ReadKey();
     }

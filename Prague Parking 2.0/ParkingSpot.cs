@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-
+﻿
 namespace PragueParking_2._0
 {
     internal class ParkingSpot
