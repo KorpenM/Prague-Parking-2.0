@@ -255,24 +255,41 @@ namespace Prague_Parking_2._0
         }
 
         public void ShowParkingData()
+{
+    string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
+
+    if (File.Exists(jsonFilePath))
+    {
+        string json = File.ReadAllText(jsonFilePath);
+        var parkingData = JsonConvert.DeserializeObject<ParkingData>(json);
+
+        Console.WriteLine("Current parking data:");
+
+        foreach (var spot in parkingData.ParkingSpots)
         {
-            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
-
-            if (File.Exists(jsonFilePath))
+            Console.WriteLine($"Spot ID: {spot.ID + 1}");
+            if (spot.Vehicles != null && spot.Vehicles.Count > 0)
             {
-                string json = File.ReadAllText(jsonFilePath);
-                var parkingData = JsonConvert.DeserializeObject<ParkingData>(json);
-
-                Console.WriteLine("Current parking data:");
-
-                foreach (var spot in parkingData.ParkingSpots)
+                foreach (var vehicle in spot.Vehicles)
                 {
-                    Console.WriteLine($"Spot ID: {spot.ID + 1}");
-                    if (spot.Vehicles != null && spot.Vehicles.Count > 0)
-                    {
-                        foreach (var vehicle in spot.Vehicles)
-                        {
-                            Console.WriteLine($"  Vehicle: {vehicle.Type}, Reg Number: {vehicle.RegNumber}, Parking Start Time: {vehicle.ParkingStartTime}");
+                    Console.WriteLine($"  Vehicle: {vehicle.Type}, Reg Number: {vehicle.RegNumber}, Parking Start Time: {vehicle.ParkingStartTime}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("  No vehicles parked.");
+            }
+            Console.WriteLine(); // Blank line for better readability
+        }
+    }
+    else
+    {
+        Console.WriteLine("Parking data file not found.");
+    }
+
+    Console.WriteLine("Press any key to continue...");
+    Console.ReadKey();
+}
 
         public bool RemoveVehicle(string regNumber, bool removeBus)
         {
