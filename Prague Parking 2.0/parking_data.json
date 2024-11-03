@@ -1,18 +1,3 @@
 {
-  "ParkingSpots": [
-    {
-      "ID": 0,
-      "Vehicles": [
-        {
-          "RegNumber": "ABC123",
-          "Type": "Car",
-          "ParkingStartTime": "2024-11-03T12:00:00"
-        }
-      ]
-    },
-    {
-      "ID": 1,
-      "Vehicles": []
-    }
-  ]
+  "ParkingSpots": []
 }
