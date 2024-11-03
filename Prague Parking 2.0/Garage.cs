@@ -178,6 +178,8 @@ namespace Prague_Parking_2._0
 
         public bool RemoveVehicle(string regNumber, bool removeBus)
         {
+
+
             foreach (ParkingSpot spot in garageList)
             {
                 foreach (Vehicle vehicle in spot.Spots)
