@@ -115,6 +115,13 @@ namespace Prague_Parking_2._0
                             Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
                             return;
                         }
+                        else if (i > 46)
+                        {
+                            Console.WriteLine("There's no available parking spots left to park this bus at");
+                            Console.Write("\n\nPress any random key to continue...");
+                            Console.ReadKey();
+                            return;
+                        }
                         else
                         {
                             continue;
@@ -124,19 +131,48 @@ namespace Prague_Parking_2._0
             }
         }
 
-        public bool RemoveVehicle(string regNumber)
+        public bool RemoveVehicle(string regNumber, bool removeBus)
         {
             foreach (ParkingSpot spot in garageList)
             {
                 foreach (Vehicle vehicle in spot.Spots)
                 {
-                    if (vehicle.RegNumber == regNumber && vehicle.EndParking)
+                    if (vehicle.RegNumber == regNumber && vehicle.EndParking && removeBus != true)
                     {
                         AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime}[/] ");
                         AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost}[/] ");
                         spot.Spots.Remove(vehicle);
                         spot.UpdateSpot(vehicle);
                         return true;
+                    }
+                    else if (removeBus == true)
+                    {
+                        for (int j = 0; j < garageList.Count; j++)
+                        {
+                            ParkingSpot parkingSpot = garageList[j];
+                            ParkingSpot secondParkingSpot = garageList[j + 1];
+                            ParkingSpot thirdParkingSpot = garageList[j + 2];
+                            ParkingSpot fourthParkingSpot = garageList[j + 3];
+
+                            if (vehicle.RegNumber == regNumber)
+                            {
+                                //Need to add a function to calculate total cost
+                                garageList[j].Spots.Remove(vehicle);
+                                garageList[j].ResetSpot();
+                                garageList[j + 1].Spots.Remove(vehicle);
+                                garageList[j + 1].ResetSpot();
+                                garageList[j + 2].Spots.Remove(vehicle);
+                                garageList[j + 2].ResetSpot();
+                                garageList[j + 3].Spots.Remove(vehicle);
+                                garageList[j + 3].ResetSpot();
+                                Console.WriteLine("The bus has been reclaimed");
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
                     }
                     else
                     {
@@ -187,17 +223,20 @@ namespace Prague_Parking_2._0
             return null;
         }
 
-        public bool MoveVehicle(string regNumber, bool selectSpace, int space)
+        public bool MoveVehicle(string regNumber, bool selectSpace, int space, bool moveBus)
         {
             Vehicle? vehicle = FindVehicle(regNumber);
 
-            if (vehicle != null)
+            if (vehicle != null && moveBus != true)
             {
-                RemoveVehicle(regNumber);
-                //Change bool when working on bus
+                RemoveVehicle(regNumber, false);
                 ParkVehicle(vehicle, true, space - 1, false);
             }
-
+            else if (vehicle != null && moveBus == true)
+            {
+                RemoveVehicle(regNumber, true);
+                ParkVehicle(vehicle, true, space - 1, true);
+            }
             return true;
         }
 
@@ -223,7 +262,7 @@ namespace Prague_Parking_2._0
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                 }
-                else if (spot.Available == 0)
+                else if (spot.Available <= 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                 }

@@ -200,10 +200,20 @@ namespace Prague_Parking_2._0
             Console.Clear();
             string regNumber = AnsiConsole.Ask<string>("Enter the registration plate of the vehicle you wish to remove: ");
 
-            if (garage.RemoveVehicle(regNumber))
+            Console.Clear();
+            // Ask the user to confirm
+            bool removeBus = AnsiConsole.Prompt(
+                new TextPrompt<bool>("Is the vehicle you're reclaiming a bus?")
+                    .AddChoice(true)
+                    .AddChoice(false)
+                    .DefaultValue(false)
+                    .WithConverter(choice => choice ? "y" : "n" ));
+            // Echo the confirmation back to the terminal
+            Console.WriteLine(removeBus ? "Confirmed" : "Declined");
+
+            if (garage.RemoveVehicle(regNumber, removeBus))
             {
-                AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] has been removed");
-                
+                //AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] has been removed");
             }
             else
             {
@@ -217,13 +227,14 @@ namespace Prague_Parking_2._0
         {
             Console.Clear();
             string regNumber = AnsiConsole.Ask<string>("Enter the registration number of the vehicle you want to move: ");
-            //if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move from: "), out int fromSpot) || fromSpot < 0)
-            //{
-            //    Console.WriteLine("Invalid spot number");
-            //    Console.Write("Press random key to continue...");
-            //    Console.ReadKey();
-            //    return;
-            //}
+
+            bool moveBus = AnsiConsole.Prompt(
+                new TextPrompt<bool>("Is the vehicle you're reclaiming a bus?")
+                    .AddChoice(true)
+                    .AddChoice(false)
+                    .DefaultValue(false)
+                    .WithConverter(choice => choice ? "y" : "n"));
+            Console.WriteLine(moveBus ? "Confirmed" : "Declined");
 
             if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 0)
             {
@@ -233,7 +244,7 @@ namespace Prague_Parking_2._0
                 return;
             }
 
-            if (garage.MoveVehicle(regNumber, true, toSpot))
+            if (garage.MoveVehicle(regNumber, true, toSpot, moveBus))
             {
                 Console.WriteLine("Vehicle moved successfully");
             }
