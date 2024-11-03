@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Xml;
 using PragueParking_2._0;
+using System.Runtime.CompilerServices;
 
+[assembly:InternalsVisibleTo("GarageTest")]
 namespace Prague_Parking_2._0
 {
 
@@ -16,11 +18,11 @@ namespace Prague_Parking_2._0
         //public void ParkVehicle(Vehicle vehicle);
 
     }
-    class Garage
+    public class Garage
     {
         public string RegNumber { get; set; }
         private int capacity = 100;
-        public List<ParkingSpot> garageList = new List<ParkingSpot>();
+        internal List<ParkingSpot> garageList = new List<ParkingSpot>();
         public ParkingSettings settings; // Store settings from JSON
 
         public Garage() // Constructor for Garage
@@ -179,7 +181,7 @@ namespace Prague_Parking_2._0
             return null;
         }
 
-        public ParkingSpot? FindSpot(Vehicle vehicle)
+        internal ParkingSpot? FindSpot(Vehicle vehicle)
         {
             foreach (var spot in garageList)
             {

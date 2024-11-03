@@ -36,12 +36,12 @@ namespace Prague_Parking_2._0
                 var options = new[]
                 {
                 "Park Vehicle",
-                "Retrieve/Remove Vehicle",
+                "Retrieve Vehicle",
                 "Move Vehicle",
-                "Search",
-                "Show all registered vehicles",
+                "Search Vehicle",
+                "Show All Registered Vehicles",
                 "Edit Parking Settings", // Json config
-                "Show Current/Updated Settings",
+                "Show Current Settings",
                 "Exit"
             };
 
@@ -57,22 +57,22 @@ namespace Prague_Parking_2._0
                     case "Park Vehicle":
                         AddVehicle(garage);
                         break;
-                    case "Retrieve/Remove Vehicle":
+                    case "Retrieve Vehicle":
                         RemoveVehicle(garage);
                         break;
                     case "Move Vehicle":
                         MoveVehicle(garage);
                         break;
-                    case "Search":
+                    case "Search Vehicle":
                         SearchVehicle(garage);
                         break;
-                    case "Show all registered vehicles":
+                    case "Show All Registered Vehicles":
                         ShowRegisteredVehicles(garage);
                         break;
                     case "Edit Parking Settings":
                         EditSettings(garage);
                         break;
-                    case "Show Current/Updated Settings":
+                    case "Show Current Settings":
                         ShowSettings(garage);
                         break;
                     case "Exit":

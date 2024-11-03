@@ -1,8 +1,10 @@
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("GarageTest")]
 namespace Prague_Parking_2._0
 {
-    internal class ParkingSpot
+    public class ParkingSpot
     {
         public int VehicleSpace { get; set; }
 
@@ -26,8 +28,7 @@ namespace Prague_Parking_2._0
         public ParkingSpot(int id)
         {
             ID = id;
-            Spots = new List<Vehicle>();
-          
+            Spots = new List<Vehicle>(); 
         }
 
         public void ResetSpot()
