@@ -22,6 +22,7 @@ namespace Prague_Parking_2._0
     {
         public string RegNumber { get; set; }
         private int capacity = 100;
+        List<ParkingSpot> garageList = new List<ParkingSpot>();
         internal List<ParkingSpot> garageList = new List<ParkingSpot>();
         public ParkingSettings settings; // Store settings from JSON
 
