@@ -1,5 +1,7 @@
-﻿namespace Prague_Parking_2._0;
+﻿using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("GarageTest")]
+namespace Prague_Parking_2._0;
 public interface ICalculateParkingCost
 {
     public double CalculateParkingCost(DateTime exitTime);
@@ -21,12 +23,12 @@ public abstract class Vehicle : ICalculateParkingCost
 
     public bool SetEndPardking()
     {
-        return EndParking =  true;
+        return EndParking = true;
     }
 }
 
 
-class Bike(string regNumber) : Vehicle
+public class Bike(string regNumber) : Vehicle
 {
 
     public override string RegNumber { get; set; } = regNumber;
@@ -39,7 +41,7 @@ class Bike(string regNumber) : Vehicle
     }
 }
 
-class MC(string regNumber) : Vehicle
+public class MC(string regNumber) : Vehicle
 {
     public override string RegNumber { get; set; } = regNumber;
     public override int Rate { get; set; } = 10;
@@ -52,7 +54,7 @@ class MC(string regNumber) : Vehicle
 
 }
 
-class Car(string regNumber) : Vehicle
+public class Car(string regNumber) : Vehicle
 {
     public override string RegNumber { get; set; } = regNumber;
     public override int Rate { get; set; } = 20;
@@ -65,7 +67,7 @@ class Car(string regNumber) : Vehicle
 
 }
 
-class Bus(string regNumber) : Vehicle
+public class Bus(string regNumber) : Vehicle
 {
     public override string RegNumber { get; set; } = regNumber;
     public override int Rate { get; set; } = 40;
@@ -76,4 +78,3 @@ class Bus(string regNumber) : Vehicle
         return Space * Rate * parkedDuration.TotalHours;
     }
 }
-

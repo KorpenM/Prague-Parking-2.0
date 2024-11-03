@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace Prague_Parking_2._0
 {
