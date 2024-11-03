@@ -16,7 +16,7 @@ namespace Prague_Parking_2._0
         public bool Occupied { get; set; } = false;
 
         public int UsedCapacity { get; set; } = 0;
-        public int Available { get; set; }
+        public int Available { get; set; } = 4;
 
         public void SetVehicleSpace(Vehicle vehicle)
         {
@@ -27,6 +27,42 @@ namespace Prague_Parking_2._0
         {
             ID = id;
             Spots = new List<Vehicle>();
+          
+        }
+
+        public void ResetSpot()
+        {
+            UsedCapacity = 0;
+            Available = SpotCapacity - UsedCapacity;
+
+            if (Available > 0)
+            {
+                Occupied = false;
+            }
+        }
+
+        public void UpdateSpot(Vehicle vehicle)
+        {
+            UsedCapacity += vehicle.Space;
+            Available = SpotCapacity - UsedCapacity;
+
+            if (Available == 0)
+            {
+                Occupied = true;
+            }
+        }
+
+
+        public override string ToString()
+        {
+            string info = "";
+
+            foreach (Vehicle vehicle in Spots)
+            {
+                return info =  vehicle.RegNumber + " " + vehicle.Space + " " + vehicle.GetType().Name;
+            }
+
+            return info;
         }
 
         //public bool CanAcceptVehicle(Vehicle vehicle)
