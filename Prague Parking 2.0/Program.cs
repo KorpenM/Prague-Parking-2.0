@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Prague_Parking_2._0;
 using System.IO;
@@ -17,8 +17,6 @@ internal class Program
 
     private static void Main()
     {
-
         garage.LoadSettings();
-
     }
 }
