@@ -82,7 +82,7 @@ namespace Prague_Parking_2._0
                         Console.Write("\nInvalid choice. Please try again...");
                         break;
                 }
-            } while (menuChoice != "Exit"); // Program closes only at case "Exit"
+            } while (menuChoice != "Exit"); // Program closes only at case "Exit".
         }
 
 
