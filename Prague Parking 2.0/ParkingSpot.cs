@@ -4,107 +4,87 @@ namespace Prague_Parking_2._0
 {
     internal class ParkingSpot
     {
-
-        //Remoce fields
-       
-        private int spotCapacity = 4;
-
-        private int available;
-
-        private bool occupied;
-
-        private int usedCapacity;
-
-        private int vehicleSpace;
+        public int VehicleSpace { get; set; }
 
         public List<Vehicle> Spots { get; set; }
         public int ID { get; set; }
-
 
         public Vehicle? ParkedVehicle { get; set; }
 
         public int SpotCapacity { get; set; } = 4;
 
-
-
-
-        public int UsedCapacity
-        {
-            get { return usedCapacity; }
-            set { usedCapacity = value; }
-        }
-
-
-
         public bool Occupied { get; set; } = false;
 
+        public int UsedCapacity { get; set; } = 0;
+        public int Available { get; set; } = 4;
 
         public void SetVehicleSpace(Vehicle vehicle)
         {
-            vehicleSpace = vehicle.Space;
-        }
-
-
-        //Set value in other method
-
-        public int Available
-        {
-            get
-            {
-                if (Spots.Count == 0)
-                {
-                    return available = 4;
-                }
-                else
-                {
-
-                    return available = SpotCapacity - usedCapacity;
-
-                }
-            }
-            set { available = value; }
+            VehicleSpace = vehicle.Space;
         }
 
         public ParkingSpot(int id)
         {
-            //this.ParkedVehicle = vehicle;
-
             ID = id;
-            Occupied = false;
             Spots = new List<Vehicle>();
-            //this.Available = 4;
-            SpotCapacity = spotCapacity;
-            UsedCapacity = usedCapacity;
-
+          
         }
 
-
-
-        public virtual void ParkVehicle()
+        public void ResetSpot()
         {
-            Console.WriteLine("ParkVehicle in ParkingSPot");
+            UsedCapacity = 0;
+            Available = SpotCapacity - UsedCapacity;
+
+            if (Available > 0)
+            {
+                Occupied = false;
+            }
         }
 
-        public bool CanAcceptVehicle(Vehicle vehicle)
+        public void UpdateSpot(Vehicle vehicle)
         {
-            // Bussar kan endast parkera på platser 0-49
-            if (vehicle.Type == "Bus" && ID >= 50)
-            {
-                return false;
-            }
+            UsedCapacity += vehicle.Space;
+            Available = SpotCapacity - UsedCapacity;
 
-            // Spots 0-49 kan acceptera alla typer av fordon
-            if (ID < 50)
+            if (Available == 0)
             {
-                return true;
-            }
-            else
-            {
-                // Spots 50-99 kan bara acceptera Bike, MC och Car
-                return vehicle.Type == "Bike" ||
-                       vehicle.Type == "MC" ||
-                       vehicle.Type == "Car";
+                Occupied = true;
             }
         }
+
+
+        public override string ToString()
+        {
+            string info = "";
+
+            foreach (Vehicle vehicle in Spots)
+            {
+                return info =  vehicle.RegNumber + " " + vehicle.Space + " " + vehicle.GetType().Name;
+            }
+
+            return info;
+        }
+
+        //public bool CanAcceptVehicle(Vehicle vehicle)
+        //{
+        //    // Bussar kan endast parkera på platser 0-49
+        //    if (vehicle.Type == "Bus" && ID >= 50)
+        //    {
+        //        return false;
+        //    }
+
+        //    // Spots 0-49 kan acceptera alla typer av fordon
+        //    if (ID < 50)
+        //    {
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        // Spots 50-99 kan bara acceptera Bike, MC och Car
+        //        return vehicle.Type == "Bike" ||
+        //               vehicle.Type == "MC" ||
+        //               vehicle.Type == "Car";
+        //    }
+        //}
     }
 }
