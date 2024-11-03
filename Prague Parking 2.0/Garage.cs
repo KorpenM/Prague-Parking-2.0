@@ -80,15 +80,18 @@ namespace Prague_Parking_2._0
         }
 
 
-        public void ParkVehicle(Vehicle vehicle, bool selectSpace, int space)
+        public void ParkVehicle(Vehicle vehicle, bool selectSpace, int space, bool parkingBus)
         {
             if (!selectSpace && space == 0)
             {
                 for (int i = 0; i < garageList.Count; i++)
                 {
                     ParkingSpot parkingSpot = garageList[i];
+                    ParkingSpot secondParkingSpot = garageList[i+1];
+                    ParkingSpot thirdParkingSpot = garageList[i+2];
+                    ParkingSpot fourthParkingSpot = garageList[i+3];
 
-                    if (vehicle.Space <= parkingSpot.Available)
+                    if (vehicle.Space <= parkingSpot.Available && parkingBus != true)
                     {
                         garageList[i].Spots.Add(vehicle);
                         garageList[i].UpdateSpot(vehicle);
@@ -96,26 +99,27 @@ namespace Prague_Parking_2._0
                         Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
                         break;
                     }
-                    
-
-
-                }
-            }
-            else
-            {
-                ParkingSpot parkingSpot = garageList[space];
-
-                if (vehicle.Space <= parkingSpot.Available)
-                {
-                    garageList[space].Spots.Add(vehicle);
-                    garageList[space].UpdateSpot(vehicle);
-                    Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {space + 1}");
-                    Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
-                }
-
-                for (int j = 0; j < garageList[space].Spots.Count; j++)
-                {
-                    Console.WriteLine($"Spot {j} available");
+                    else if (parkingBus == true)
+                    {
+                        if (parkingSpot.Available == 4 && secondParkingSpot.Available == 4
+                           && thirdParkingSpot.Available == 4 && fourthParkingSpot.Available == 4)
+                        {
+                            garageList[i].Spots.Add(vehicle);
+                            garageList[i].UpdateSpot(vehicle);
+                            garageList[i + 1].Spots.Add(vehicle);
+                            garageList[i + 1].UpdateSpot(vehicle);
+                            garageList[i + 2].Spots.Add(vehicle);
+                            garageList[i + 2].UpdateSpot(vehicle);
+                            garageList[i + 3].Spots.Add(vehicle);
+                            garageList[i + 3].UpdateSpot(vehicle);
+                            Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
+                            return;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
                 }
             }
         }
@@ -190,7 +194,8 @@ namespace Prague_Parking_2._0
             if (vehicle != null)
             {
                 RemoveVehicle(regNumber);
-                ParkVehicle(vehicle, true, space - 1);
+                //Change bool when working on bus
+                ParkVehicle(vehicle, true, space - 1, false);
             }
 
             return true;
@@ -242,7 +247,6 @@ namespace Prague_Parking_2._0
                     foreach (Vehicle vehicle in spot.Spots)
                     {
                         Console.WriteLine($"Spot {spot.ID + 1}: {vehicle.GetType().Name} - Reg: {vehicle.RegNumber}");
-                        Console.WriteLine(vehicle.ToString());
                         hasVehicles = true;
                     }
                 }

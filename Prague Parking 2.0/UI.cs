@@ -156,6 +156,7 @@ namespace Prague_Parking_2._0
             Console.Clear();
             string regNumber = AnsiConsole.Ask<string>("Type in the registration plate of the vehicle in question: \n");
             Vehicle vehicle = null;
+            bool parkingBus = false;
 
             switch (chosenVehicleType)
             {
@@ -170,6 +171,8 @@ namespace Prague_Parking_2._0
                     break;
                 case "Bus":
                     vehicle = new Bus(regNumber);
+                    parkingBus = true;
+
                     break;
                 default:
                     Console.WriteLine("Invalid vehicle type selected");
@@ -181,7 +184,7 @@ namespace Prague_Parking_2._0
             if (regNumber != null)
             {
                 //AnsiConsole.Markup($"{vehicle.TypeOfVehicle} with registration number [blue]{regNumber}[/] has been parked");
-                garage.ParkVehicle(vehicle, false, 0);
+                garage.ParkVehicle(vehicle, false, 0, parkingBus);
                 Console.WriteLine("UI Parked");
             }
             else
