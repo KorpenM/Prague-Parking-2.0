@@ -97,7 +97,7 @@ namespace Prague_Parking_2._0
                         garageList[i].UpdateSpot(vehicle);
                         Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1}");
                         Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
-                        break;
+                        return;
                     }
                     else if (parkingBus == true)
                     {
@@ -120,6 +120,51 @@ namespace Prague_Parking_2._0
                             Console.WriteLine("There's no available parking spots left to park this bus at");
                             Console.Write("\n\nPress any random key to continue...");
                             Console.ReadKey();
+                            return;
+                        }
+                        else
+                        {
+                            continue;
+                        }
+                    }
+                }
+            }
+            else if (selectSpace == true && space != 0)
+            {
+                for (int i = 0; i < garageList.Count; i++)
+                {
+                    ParkingSpot parkingSpot = garageList[i];
+                    ParkingSpot secondParkingSpot = garageList[i + 1];
+                    ParkingSpot thirdParkingSpot = garageList[i + 2];
+                    ParkingSpot fourthParkingSpot = garageList[i + 3];
+
+                    if (vehicle.Space <= parkingSpot.Available && parkingBus != true)
+                    {
+                        garageList[i].Spots.Add(vehicle);
+                        garageList[i].UpdateSpot(vehicle);
+                        Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1}");
+                        Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
+                        return;
+                    }
+                    else if (parkingBus == true)
+                    {
+                        if (i == space && parkingSpot.Available == 4 && secondParkingSpot.Available == 4
+                           && thirdParkingSpot.Available == 4 && fourthParkingSpot.Available == 4)
+                        {
+                            garageList[i].Spots.Add(vehicle);
+                            garageList[i].UpdateSpot(vehicle);
+                            garageList[i + 1].Spots.Add(vehicle);
+                            garageList[i + 1].UpdateSpot(vehicle);
+                            garageList[i + 2].Spots.Add(vehicle);
+                            garageList[i + 2].UpdateSpot(vehicle);
+                            garageList[i + 3].Spots.Add(vehicle);
+                            garageList[i + 3].UpdateSpot(vehicle);
+                            Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
+                            return;
+                        }
+                        else if (i > 46)
+                        {
+                            Console.WriteLine("There's no available parking spots left to park this bus at");
                             return;
                         }
                         else
