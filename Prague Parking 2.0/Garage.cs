@@ -277,7 +277,7 @@ namespace Prague_Parking_2._0
                 RemoveVehicle(regNumber, false);
                 ParkVehicle(vehicle, true, space - 1, false);
             }
-            else if (vehicle != null && moveBus == true)
+            else if (moveBus == true)
             {
                 RemoveVehicle(regNumber, true);
                 ParkVehicle(vehicle, true, space - 1, true);
