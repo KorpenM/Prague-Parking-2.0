@@ -97,10 +97,10 @@ namespace Prague_Parking_2._0
             {
                 garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>
         {
-            { "Car", new VehicleTypeInfo() },
+            { "Bike", new VehicleTypeInfo() },
             { "Motorcycle", new VehicleTypeInfo() },
-            { "Bus", new VehicleTypeInfo() },
-            { "Bike", new VehicleTypeInfo() }
+            { "Car", new VehicleTypeInfo() },
+            { "Bus", new VehicleTypeInfo() }
         };
             }
 
