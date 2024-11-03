@@ -16,7 +16,7 @@ namespace Prague_Parking_2._0
 
         public UI(Garage garage)
         {
-            
+            garage.LoadParkingData();
 
             do
             {
@@ -36,12 +36,14 @@ namespace Prague_Parking_2._0
                 var options = new[]
                 {
                 "Park Vehicle",
-                "Retrieve/Remove Vehicle",
+                "Retrieve Vehicle",
                 "Move Vehicle",
-                "Search",
-                "Show all registered vehicles",
-                "Edit Parking Settings", // Json config
-                "Show Current/Updated Settings",
+                "Search Vehicle",
+                "Show All Registered Vehicles",
+                "Edit Parking Settings",
+                "Show Current Settings",
+                "Show Parking Data",
+                "Add New Vehicle Type",
                 "Exit"
             };
 
@@ -57,23 +59,32 @@ namespace Prague_Parking_2._0
                     case "Park Vehicle":
                         AddVehicle(garage);
                         break;
-                    case "Retrieve/Remove Vehicle":
+                    case "Retrieve Vehicle":
                         RemoveVehicle(garage);
                         break;
                     case "Move Vehicle":
                         MoveVehicle(garage);
                         break;
-                    case "Search":
+                    case "Search Vehicle":
                         SearchVehicle(garage);
                         break;
-                    case "Show all registered vehicles":
-                        ShowRegisteredVehicles(garage);
+                    case "Show All Registered Vehicles":
+                        ShowRegisteredVehicles(garage); 
                         break;
                     case "Edit Parking Settings":
                         EditSettings(garage);
+                        garage.SaveParkingData();
                         break;
-                    case "Show Current/Updated Settings":
+                    case "Show Current Settings":
                         ShowSettings(garage);
+                        garage.SaveParkingData();
+                        break;
+                    case "Show Parking Data":
+                        garage.ShowParkingData();
+                        break;
+                    case "Add New Vehicle Type":
+                        garage.AddNewVehicleType();
+                        garage.SaveParkingData();
                         break;
                     case "Exit":
                         Console.Write("\nExiting program...");
@@ -85,31 +96,62 @@ namespace Prague_Parking_2._0
             } while (menuChoice != "Exit"); // Program closes only at case "Exit".
         }
 
-
         private static void EditSettings(Garage garage)
         {
-            Console.Clear();
-            AnsiConsole.Markup("[bold yellow]Editing Parking Settings:[/]\n");
-
-            garage.settings.TotalSpots = AnsiConsole.Ask<int>("Enter total parking spots: ");
-            garage.settings.FreeParkingMinutes = AnsiConsole.Ask<int>("Enter free parking minutes: ");
-
-            // Check and initiate VehicleTypes if it's null
-            if (garage.settings.VehicleTypes == null)
             {
-                garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
-            }
+                Console.Clear();
+                AnsiConsole.Markup("[bold yellow]Editing Parking Settings:[/]\n");
 
-            foreach (var vehicleType in garage.settings.VehicleTypes)
-            {
-                AnsiConsole.Markup($"\n--- [bold cyan]{vehicleType.Key} Settings ---[/]");
-                vehicleType.Value.SpaceRequired = AnsiConsole.Ask<int>("Enter space required: ");
-                vehicleType.Value.RatePerHour = AnsiConsole.Ask<int>("Enter rate per hour: ");
-                vehicleType.Value.AllowedSpots = AnsiConsole.Ask<string>("Enter allowed spots: ");
-                vehicleType.Value.NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>("Enter number of vehicles per spot: ");
-            }
+                garage.settings.TotalSpots = AnsiConsole.Ask<int>("Enter total parking spots: ");
+                garage.settings.FreeParkingMinutes = AnsiConsole.Ask<int>("Enter free parking minutes: ");
 
-            garage.SaveSettings();
+                // Kontrollera om det redan finns fordonstyper och initiera dem om de inte finns
+                if (garage.settings.VehicleTypes == null || !garage.settings.VehicleTypes.Any())
+                {
+                    garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>
+        {
+            { "Bike", new VehicleTypeInfo() },
+            { "Motorcycle", new VehicleTypeInfo() },
+            { "Car", new VehicleTypeInfo() },
+            { "Bus", new VehicleTypeInfo() }
+        };
+                }
+
+                // Ge möjlighet att lägga till en ny fordonstyp
+                if (AnsiConsole.Confirm("Would you like to add a new vehicle type?"))
+                {
+                    string newVehicleType = AnsiConsole.Ask<string>("Enter the new vehicle type name: ");
+                    if (!garage.settings.VehicleTypes.ContainsKey(newVehicleType))
+                    {
+                        garage.settings.VehicleTypes[newVehicleType] = new VehicleTypeInfo();
+                        garage.settings.VehicleTypes[newVehicleType].SpaceRequired = AnsiConsole.Ask<int>("Enter space required: ");
+                        garage.settings.VehicleTypes[newVehicleType].RatePerHour = AnsiConsole.Ask<int>("Enter rate per hour: ");
+                        garage.settings.VehicleTypes[newVehicleType].AllowedSpots = AnsiConsole.Ask<string>("Enter allowed spots: ");
+                        garage.settings.VehicleTypes[newVehicleType].NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>("Enter number of vehicles per spot: ");
+                    }
+                    else
+                    {
+                        AnsiConsole.Markup("[red]This vehicle type already exists.[/]");
+                    }
+                }
+
+                // Check and initiate VehicleTypes if it's null
+                if (garage.settings.VehicleTypes == null)
+                {
+                    garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
+                }
+
+                foreach (var vehicleType in garage.settings.VehicleTypes)
+                {
+                    AnsiConsole.Markup($"\n--- [bold cyan]{vehicleType.Key} Settings ---[/]");
+                    vehicleType.Value.SpaceRequired = AnsiConsole.Ask<int>("Enter space required: ");
+                    vehicleType.Value.RatePerHour = AnsiConsole.Ask<int>("Enter rate per hour: ");
+                    vehicleType.Value.AllowedSpots = AnsiConsole.Ask<string>("Enter allowed spots: ");
+                    vehicleType.Value.NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>("Enter number of vehicles per spot: ");
+                }
+
+                garage.SaveSettings();
+            }
         }
 
         private static void ShowSettings(Garage garage)
@@ -124,7 +166,11 @@ namespace Prague_Parking_2._0
                 // Read and show JSON file
                 string json = File.ReadAllText(jsonFilePath);
                 var formattedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(json), Newtonsoft.Json.Formatting.Indented);
+
+                AnsiConsole.Markup($"[bold cyan]{formattedJson}[/]");
+
                 AnsiConsole.Markup(formattedJson);
+
             }
             else
             {
