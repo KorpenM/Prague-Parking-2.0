@@ -243,10 +243,12 @@ namespace Prague_Parking_2._0
                     }
                     else
                     {
-                        return null;
+                        //changed from return null to continue to make move bus work
+                        continue;
                     }
                 }
-                break;
+                //changed from return null to continue to make move bus work
+                continue;
             }
             return null;
         }
@@ -277,7 +279,7 @@ namespace Prague_Parking_2._0
                 RemoveVehicle(regNumber, false);
                 ParkVehicle(vehicle, true, space - 1, false);
             }
-            else if (moveBus == true)
+            else if (vehicle != null && moveBus == true)
             {
                 RemoveVehicle(regNumber, true);
                 ParkVehicle(vehicle, true, space - 1, true);
