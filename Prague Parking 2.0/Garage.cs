@@ -173,12 +173,6 @@ namespace Prague_Parking_2._0
                 string json = File.ReadAllText(jsonFilePath);
                 settings = JsonConvert.DeserializeObject<ParkingSettings>(json);
                 Console.WriteLine("Settings loaded successfully.");
-
-                // Kontrollera om VehicleTypes är null och initiera vid behov
-                if (settings.VehicleTypes == null)
-                {
-                    settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
-                }
             }
             else
             {
@@ -197,7 +191,14 @@ namespace Prague_Parking_2._0
             }
                 };
             }
+
+            // Kontrollera om VehicleTypes är null och initiera vid behov
+            if (settings.VehicleTypes == null)
+            {
+                settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
+            }
         }
+
 
         public void SaveSettings()
         {
@@ -205,6 +206,39 @@ namespace Prague_Parking_2._0
             string json = JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented); // Indenterad format
             File.WriteAllText(jsonFilePath, json);
             Console.WriteLine("Settings saved successfully.");
+        }
+
+        public void AddNewVehicleType()
+        {
+            Console.Clear();
+            AnsiConsole.Markup("[bold yellow]Add New Vehicle Type:[/]\n");
+
+            string newVehicleType = AnsiConsole.Ask<string>("Enter the name of the new vehicle type: ");
+
+            // Kontrollera om fordonstypen redan finns
+            if (settings.VehicleTypes.ContainsKey(newVehicleType))
+            {
+                AnsiConsole.Markup("[red]This vehicle type already exists. Please choose a different name.[/]");
+                Console.Write("\nPress random key to continue...");
+                Console.ReadKey();
+                return;
+            }
+
+            var newVehicleInfo = new VehicleTypeInfo
+            {
+                SpaceRequired = AnsiConsole.Ask<int>("Enter space required: "),
+                RatePerHour = AnsiConsole.Ask<int>("Enter rate per hour: "),
+                AllowedSpots = AnsiConsole.Ask<string>("Enter allowed spots: "),
+                NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>("Enter number of vehicles per spot: ")
+            };
+
+            // Lägga till den nya fordonstypen i VehicleTypes
+            settings.VehicleTypes[newVehicleType] = newVehicleInfo;
+            Console.WriteLine($"Added new vehicle type: {newVehicleType}");
+
+            SaveSettings(); // Spara de nya inställningarna
+            Console.Write("\nPress random key to continue...");
+            Console.ReadKey();
         }
 
 

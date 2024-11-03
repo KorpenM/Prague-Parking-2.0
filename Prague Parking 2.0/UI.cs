@@ -44,6 +44,7 @@ namespace Prague_Parking_2._0
                 "Edit Parking Settings", // Json config
                 "Show Current Settings",
                 "Show Parking Data",
+                "Add New Vehicle Type",
                 "Exit"
             };
 
@@ -87,6 +88,10 @@ namespace Prague_Parking_2._0
                     case "Show Parking Data":
                         garage.ShowParkingData();
                         break;
+                    case "Add New Vehicle Type":
+                        garage.AddNewVehicleType();
+                        garage.SaveParkingData();
+                        break;
                     case "Exit":
                         Console.Write("\nExiting program...");
                         break;
@@ -105,6 +110,7 @@ namespace Prague_Parking_2._0
             garage.settings.TotalSpots = AnsiConsole.Ask<int>("Enter total parking spots: ");
             garage.settings.FreeParkingMinutes = AnsiConsole.Ask<int>("Enter free parking minutes: ");
 
+            // Kontrollera om det redan finns fordonstyper och initiera dem om de inte finns
             if (garage.settings.VehicleTypes == null || !garage.settings.VehicleTypes.Any())
             {
                 garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>
@@ -116,7 +122,25 @@ namespace Prague_Parking_2._0
         };
             }
 
-            // Loop through all vehicles and ask to change instructions
+            // Ge möjlighet att lägga till en ny fordonstyp
+            if (AnsiConsole.Confirm("Would you like to add a new vehicle type?"))
+            {
+                string newVehicleType = AnsiConsole.Ask<string>("Enter the new vehicle type name: ");
+                if (!garage.settings.VehicleTypes.ContainsKey(newVehicleType))
+                {
+                    garage.settings.VehicleTypes[newVehicleType] = new VehicleTypeInfo();
+                    garage.settings.VehicleTypes[newVehicleType].SpaceRequired = AnsiConsole.Ask<int>("Enter space required: ");
+                    garage.settings.VehicleTypes[newVehicleType].RatePerHour = AnsiConsole.Ask<int>("Enter rate per hour: ");
+                    garage.settings.VehicleTypes[newVehicleType].AllowedSpots = AnsiConsole.Ask<string>("Enter allowed spots: ");
+                    garage.settings.VehicleTypes[newVehicleType].NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>("Enter number of vehicles per spot: ");
+                }
+                else
+                {
+                    AnsiConsole.Markup("[red]This vehicle type already exists.[/]");
+                }
+            }
+
+            // Ändra existerande fordonstyper
             foreach (var vehicleType in garage.settings.VehicleTypes)
             {
                 AnsiConsole.Markup($"\n--- [bold cyan]{vehicleType.Key} Settings ---[/]");
@@ -125,6 +149,7 @@ namespace Prague_Parking_2._0
                 vehicleType.Value.AllowedSpots = AnsiConsole.Ask<string>("Enter allowed spots: ");
                 vehicleType.Value.NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>("Enter number of vehicles per spot: ");
             }
+
             garage.SaveSettings();
         }
 
