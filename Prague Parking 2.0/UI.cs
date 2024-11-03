@@ -196,7 +196,6 @@ namespace Prague_Parking_2._0
         {
             Console.Clear();
             string regNumber = AnsiConsole.Ask<string>("Enter the registration plate of the vehicle you wish to remove: ");
-          
 
             if (garage.RemoveVehicle(regNumber))
             {

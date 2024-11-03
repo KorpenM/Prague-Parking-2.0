@@ -96,22 +96,9 @@ namespace Prague_Parking_2._0
                         Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
                         break;
                     }
-                    else //Bus - not working
-                    {
-                        for (int j = 0; j < 4; j++)
-                        {
-
-                            garageList[j].Spots.Add(vehicle);
-                            garageList[j].UpdateSpot(vehicle);
-                            break;
-                        }
-
-                        Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1} - {i + 4}");
-                        Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
-                        break;
-                    }
-
                     
+
+
                 }
             }
             else
@@ -144,7 +131,7 @@ namespace Prague_Parking_2._0
                         AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime}[/] ");
                         AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost}[/] ");
                         spot.Spots.Remove(vehicle);
-                        spot.ResetSpot();
+                        spot.UpdateSpot(vehicle);
                         return true;
                     }
                     else
