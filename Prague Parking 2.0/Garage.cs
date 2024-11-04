@@ -252,7 +252,7 @@ namespace Prague_Parking_2._0
                         garageList[i].UpdateSpot(vehicle);
                         AddAndSaveParkedVehicle(vehicle, i + 1);
                         Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1}");
-                        Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
+                        Console.WriteLine($"There are now {parkingSpot.Available} spaces available on the old spot.");
                         return;
                     }
                     else if (parkingBus == true)
@@ -297,9 +297,9 @@ namespace Prague_Parking_2._0
 
                     if (vehicle.Space <= parkingSpot.Available && parkingBus != true)
                     {
-                        garageList[i].Spots.Add(vehicle);
-                        garageList[i].UpdateSpot(vehicle);
-                        Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1}");
+                        garageList[space].Spots.Add(vehicle);
+                        garageList[space].UpdateSpot(vehicle);
+                        Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {space + 1}");
                         Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
                         return;
                     }
@@ -446,6 +446,7 @@ namespace Prague_Parking_2._0
             return true;
         }
 
+
         public void ShowColorParkingSpots()
         {
             int spotsPerRow = 10; // Number of parking spots per row
@@ -503,6 +504,5 @@ namespace Prague_Parking_2._0
             }
             Console.ResetColor();
         }
-
     }
 }
