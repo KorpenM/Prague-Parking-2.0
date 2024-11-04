@@ -172,9 +172,6 @@ namespace Prague_Parking_2._0
                 var formattedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(json), Newtonsoft.Json.Formatting.Indented);
 
                 AnsiConsole.Markup($"[bold cyan]{formattedJson}[/]");
-
-                AnsiConsole.Markup(formattedJson);
-
             }
             else
             {
