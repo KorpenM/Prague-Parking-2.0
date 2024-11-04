@@ -16,6 +16,7 @@ namespace Prague_Parking_2._0
 
         public UI(Garage garage)
         {
+
             garage.LoadParkingData();
 
             do
@@ -40,7 +41,7 @@ namespace Prague_Parking_2._0
                 "Move Vehicle",
                 "Search Vehicle",
                 "Show All Registered Vehicles",
-                "Edit Parking Settings",
+                "Edit Parking Settings", // Json config
                 "Show Current Settings",
                 "Show Parking Data",
                 "Add New Vehicle Type",
@@ -58,18 +59,23 @@ namespace Prague_Parking_2._0
                 {
                     case "Park Vehicle":
                         AddVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Retrieve Vehicle":
                         RemoveVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Move Vehicle":
                         MoveVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Search Vehicle":
                         SearchVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Show All Registered Vehicles":
-                        ShowRegisteredVehicles(garage); 
+                        ShowRegisteredVehicles(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Edit Parking Settings":
                         EditSettings(garage);
@@ -105,18 +111,19 @@ namespace Prague_Parking_2._0
                 garage.settings.TotalSpots = AnsiConsole.Ask<int>("Enter total parking spots: ");
                 garage.settings.FreeParkingMinutes = AnsiConsole.Ask<int>("Enter free parking minutes: ");
 
+                garage.settings.TotalSpots = AnsiConsole.Ask<int>("Enter total parking spots: ");
+                garage.settings.FreeParkingMinutes = AnsiConsole.Ask<int>("Enter free parking minutes: ");
+
                 // Kontrollera om det redan finns fordonstyper och initiera dem om de inte finns
                 if (garage.settings.VehicleTypes == null || !garage.settings.VehicleTypes.Any())
                 {
                     garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>
-        {
-            { "Bike", new VehicleTypeInfo() },
-            { "Motorcycle", new VehicleTypeInfo() },
-            { "Car", new VehicleTypeInfo() },
-            { "Bus", new VehicleTypeInfo() }
-        };
+                {
+                    { "Bike", new VehicleTypeInfo() },
+                    { "Motorcycle", new VehicleTypeInfo() },
+                    { "Car", new VehicleTypeInfo() },
+                    { "Bus", new VehicleTypeInfo() }};
                 }
-
                 // Ge möjlighet att lägga till en ny fordonstyp
                 if (AnsiConsole.Confirm("Would you like to add a new vehicle type?"))
                 {
@@ -134,13 +141,11 @@ namespace Prague_Parking_2._0
                         AnsiConsole.Markup("[red]This vehicle type already exists.[/]");
                     }
                 }
-
                 // Check and initiate VehicleTypes if it's null
                 if (garage.settings.VehicleTypes == null)
                 {
                     garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
                 }
-
                 foreach (var vehicleType in garage.settings.VehicleTypes)
                 {
                     AnsiConsole.Markup($"\n--- [bold cyan]{vehicleType.Key} Settings ---[/]");
@@ -149,7 +154,6 @@ namespace Prague_Parking_2._0
                     vehicleType.Value.AllowedSpots = AnsiConsole.Ask<string>("Enter allowed spots: ");
                     vehicleType.Value.NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>("Enter number of vehicles per spot: ");
                 }
-
                 garage.SaveSettings();
             }
         }
@@ -168,9 +172,6 @@ namespace Prague_Parking_2._0
                 var formattedJson = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(json), Newtonsoft.Json.Formatting.Indented);
 
                 AnsiConsole.Markup($"[bold cyan]{formattedJson}[/]");
-
-                AnsiConsole.Markup(formattedJson);
-
             }
             else
             {
@@ -202,6 +203,7 @@ namespace Prague_Parking_2._0
             Console.Clear();
             string regNumber = AnsiConsole.Ask<string>("Type in the registration plate of the vehicle in question: \n");
             Vehicle vehicle = null;
+
             bool parkingBus = false;
 
             switch (chosenVehicleType)
@@ -218,7 +220,6 @@ namespace Prague_Parking_2._0
                 case "Bus":
                     vehicle = new Bus(regNumber);
                     parkingBus = true;
-
                     break;
                 default:
                     Console.WriteLine("Invalid vehicle type selected");
@@ -229,7 +230,6 @@ namespace Prague_Parking_2._0
 
             if (regNumber != null)
             {
-                //AnsiConsole.Markup($"{vehicle.TypeOfVehicle} with registration number [blue]{regNumber}[/] has been parked");
                 garage.ParkVehicle(vehicle, false, 0, parkingBus);
                 Console.WriteLine("UI Parked");
             }
@@ -247,19 +247,17 @@ namespace Prague_Parking_2._0
             string regNumber = AnsiConsole.Ask<string>("Enter the registration plate of the vehicle you wish to remove: ");
 
             Console.Clear();
-            // Ask the user to confirm
             bool removeBus = AnsiConsole.Prompt(
                 new TextPrompt<bool>("Is the vehicle you're reclaiming a bus?")
                     .AddChoice(true)
                     .AddChoice(false)
                     .DefaultValue(false)
-                    .WithConverter(choice => choice ? "y" : "n" ));
-            // Echo the confirmation back to the terminal
+                    .WithConverter(choice => choice ? "y" : "n"));
             Console.WriteLine(removeBus ? "Confirmed" : "Declined");
 
             if (garage.RemoveVehicle(regNumber, removeBus))
             {
-                //AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] has been removed");
+                Console.WriteLine("Vehicle removed");
             }
             else
             {
@@ -303,39 +301,6 @@ namespace Prague_Parking_2._0
             Console.ReadKey();
         }
 
-        //private static void MoveVehicle(Garage garage)
-        //{
-        //    Console.Clear();
-        //    string regNumber = AnsiConsole.Ask<string>("Enter the registration number of the vehicle you want to move: ");
-        //    if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move from: "), out int fromSpot) || fromSpot < 0)
-        //    {
-        //        Console.WriteLine("Invalid spot number");
-        //        Console.Write("Press random key to continue...");
-        //        Console.ReadKey();
-        //        return;
-        //    }
-
-        //    if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 0)
-        //    {
-        //        Console.WriteLine("Invalid spot number");
-        //        Console.Write("Press random key to continue...");
-        //        Console.ReadKey();
-        //        return;
-        //    }
-
-        //    if (garage.MoveVehicle(regNumber, fromSpot, toSpot))
-        //    {
-        //        Console.WriteLine("Vehicle moved successfully");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Failed to move vehicle. Check if it exists and if spots are valid");
-        //    }
-
-        //    Console.Write("\nPress random key to continue...");
-        //    Console.ReadKey();
-        //}
-
         private static void SearchVehicle(Garage garage)
         {
             Console.Clear();
@@ -364,4 +329,3 @@ namespace Prague_Parking_2._0
         }
     }
 }
- 
