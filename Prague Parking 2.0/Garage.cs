@@ -4,28 +4,31 @@ using System;
 using Spectre.Console;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Xml;
 using PragueParking_2._0;
-using System.Runtime.CompilerServices;
 
 namespace Prague_Parking_2._0
 {
+
     interface IParkVehicle //Used in Vehicle to park itself in garage.
     {
         public string RegNumber { get; set; }
         //public void ParkVehicle(Vehicle vehicle);
 
     }
-    public class Garage
+    class Garage
     {
         public string RegNumber { get; set; }
         private int capacity = 100;
-        List<ParkingSpot> garageList = new List<ParkingSpot>();
+        public List<ParkingSpot> garageList = new List<ParkingSpot>();
         public ParkingSettings settings; // Store settings from JSON
+
+        public List<ParkedVehicle> ParkedVehicles { get; set; } = new List<ParkedVehicle>();
+
 
         public Garage() // Constructor for Garage
         {
             LoadSettings(); // Load settings from JSON
-
 
             if (garageList.Count > 0) return;
 
@@ -38,6 +41,7 @@ namespace Prague_Parking_2._0
 
         public void LoadParkingData()
         {
+
             string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
 
             if (File.Exists(jsonFilePath))
@@ -74,7 +78,6 @@ namespace Prague_Parking_2._0
                 Console.WriteLine("Parking data file not found. No previous parking data loaded.");
             }
         }
-
         public void SaveParkingData()
         {
             var parkingData = new ParkingData();
@@ -93,95 +96,65 @@ namespace Prague_Parking_2._0
                 };
 
                 parkingData.ParkingSpots.Add(spotData);
-
-                if (garageList.Count > 0) return;
-
-                //Add (capacity) parkingspots to garage
-                for (int i = 0; i < capacity; i++)
-                {
-                    garageList.Add(new ParkingSpot(i));
-                }
             }
+
+            string json = JsonConvert.SerializeObject(parkingData, Newtonsoft.Json.Formatting.Indented);
+            File.WriteAllText("parking_data.json", json);
         }
-        
-        public void ShowParkingData()
+
+
+
+        private void AddAndSaveParkedVehicle(Vehicle vehicle, params int[] spots)
+        {
+            foreach (int spot in spots)
             {
-                string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
-
-                if (File.Exists(jsonFilePath))
+                ParkedVehicles.Add(new ParkedVehicle
                 {
-                    string json = File.ReadAllText(jsonFilePath);
-                    var parkingData = JsonConvert.DeserializeObject<ParkingData>(json);
-
-                    Console.WriteLine("Current parking data:");
-
-                    foreach (var spot in parkingData.ParkingSpots)
-                    {
-                        Console.WriteLine($"Spot ID: {spot.ID + 1}");
-                        if (spot.Vehicles != null && spot.Vehicles.Count > 0)
-                        {
-                            foreach (var vehicle in spot.Vehicles)
-                            {
-                                Console.WriteLine($"  Vehicle: {vehicle.Type}, Reg Number: {vehicle.RegNumber}, Parking Start Time: {vehicle.ParkingStartTime}");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("  No vehicles parked.");
-                        }
-                        Console.WriteLine(); // Blank line for better readability
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Parking data file not found.");
-                }
-
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
+                    RegistrationNumber = vehicle.RegNumber,
+                    VehicleType = vehicle.GetType().Name,
+                    ParkingSpot = spot,
+                    EntryTime = DateTime.Now
+                });
             }
 
-        public void LoadSettings()
+            SaveParkingData(); // Spara parkeringstillståndet i JSON-fil
+        }
+
+        public void ShowParkingData()
         {
-            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
 
             if (File.Exists(jsonFilePath))
             {
                 string json = File.ReadAllText(jsonFilePath);
-                settings = JsonConvert.DeserializeObject<ParkingSettings>(json);
-                Console.WriteLine("Settings loaded successfully.");
+                var parkingData = JsonConvert.DeserializeObject<ParkingData>(json);
+
+                Console.WriteLine("Current parking data:");
+
+                foreach (var spot in parkingData.ParkingSpots)
+                {
+                    Console.WriteLine($"Spot ID: {spot.ID + 1}");
+                    if (spot.Vehicles != null && spot.Vehicles.Count > 0)
+                    {
+                        foreach (var vehicle in spot.Vehicles)
+                        {
+                            Console.WriteLine($"  Vehicle: {vehicle.Type}, Reg Number: {vehicle.RegNumber}, Parking Start Time: {vehicle.ParkingStartTime}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("  No vehicles parked.");
+                    }
+                    Console.WriteLine(); // Blank line for better readability
+                }
             }
             else
             {
-                Console.WriteLine("Config file not found. Using default settings.");
-
-                settings = new ParkingSettings
-                {
-                    TotalSpots = 100,
-                    FreeParkingMinutes = 10,
-                    VehicleTypes = new Dictionary<string, VehicleTypeInfo>
-            {
-                { "Bike", new VehicleTypeInfo { SpaceRequired = 1, RatePerHour = 5, AllowedSpots = "All spots" }},
-                { "MC", new VehicleTypeInfo { SpaceRequired = 2, RatePerHour = 10, AllowedSpots = "All spots" }},
-                { "Car", new VehicleTypeInfo { SpaceRequired = 4, RatePerHour = 20, AllowedSpots = "All spots" }},
-                { "Bus", new VehicleTypeInfo { SpaceRequired = 16, RatePerHour = 80, AllowedSpots = "Spots 1-50 only" }},
-            }
-                };
+                Console.WriteLine("Parking data file not found.");
             }
 
-            // Kontrollera om VehicleTypes är null och initiera vid behov
-            if (settings.VehicleTypes == null)
-            {
-                settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
-            }
-        }
-
-        public void SaveSettings()
-        {
-            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
-            string json = JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented); // Indenterad format
-            File.WriteAllText(jsonFilePath, json);
-            Console.WriteLine("Settings saved successfully.");
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
         }
 
         public void AddNewVehicleType()
@@ -217,42 +190,49 @@ namespace Prague_Parking_2._0
             Console.ReadKey();
         }
 
-        /*public void ParkVehicle(Vehicle vehicle, bool selectSpace, int space, bool parkBus)
-        {
-            if (!selectSpace && space == 0)
-            {
-                for (int i = 0; i < garageList.Count; i++)
-                {
-                    ParkingSpot parkingSpot = garageList[i];
 
-                    if (vehicle.Space <= parkingSpot.Available)
-                    {
-                        garageList[i].Spots.Add(vehicle);
-                        garageList[i].UpdateSpot(vehicle);
-                        Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1}");
-                        Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
-                        break;
-                    }
+        public void LoadSettings()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+
+            if (File.Exists(jsonFilePath))
+            {
+                string json = File.ReadAllText(jsonFilePath);
+                settings = JsonConvert.DeserializeObject<ParkingSettings>(json);
+                Console.WriteLine("Settings loaded successfully.");
+
+                // Kontrollera om VehicleTypes är null och initiera vid behov
+                if (settings.VehicleTypes == null)
+                {
+                    settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>();
                 }
             }
             else
             {
-                ParkingSpot parkingSpot = garageList[space];
+                Console.WriteLine("Config file not found. Using default settings.");
 
-                if (vehicle.Space <= parkingSpot.Available)
+                settings = new ParkingSettings
                 {
-                    garageList[space].Spots.Add(vehicle);
-                    garageList[space].UpdateSpot(vehicle);
-                    Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {space + 1}");
-                    Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
-                }
-
-                for (int j = 0; j < garageList[space].Spots.Count; j++)
-                {
-                    Console.WriteLine($"Spot {j} available");
-                }
+                    TotalSpots = 100,
+                    FreeParkingMinutes = 10,
+                    VehicleTypes = new Dictionary<string, VehicleTypeInfo>
+            {
+                { "Bike", new VehicleTypeInfo { SpaceRequired = 1, RatePerHour = 5, AllowedSpots = "All spots" }},
+                { "MC", new VehicleTypeInfo { SpaceRequired = 2, RatePerHour = 10, AllowedSpots = "All spots" }},
+                { "Car", new VehicleTypeInfo { SpaceRequired = 4, RatePerHour = 20, AllowedSpots = "All spots" }},
+                { "Bus", new VehicleTypeInfo { SpaceRequired = 16, RatePerHour = 80, AllowedSpots = "Spots 1-50 only" }},
             }
-        }*/
+                };
+            }
+        }
+
+        public void SaveSettings()
+        {
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "config.json");
+            string json = JsonConvert.SerializeObject(settings, Newtonsoft.Json.Formatting.Indented); // Indenterad format
+            File.WriteAllText(jsonFilePath, json);
+            Console.WriteLine("Settings saved successfully.");
+        }
 
 
         public void ParkVehicle(Vehicle vehicle, bool selectSpace, int space, bool parkingBus)
@@ -270,6 +250,7 @@ namespace Prague_Parking_2._0
                     {
                         garageList[i].Spots.Add(vehicle);
                         garageList[i].UpdateSpot(vehicle);
+                        AddAndSaveParkedVehicle(vehicle, i + 1);
                         Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1}");
                         Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
                         return;
@@ -287,6 +268,7 @@ namespace Prague_Parking_2._0
                             garageList[i + 2].UpdateSpot(vehicle);
                             garageList[i + 3].Spots.Add(vehicle);
                             garageList[i + 3].UpdateSpot(vehicle);
+                            AddAndSaveParkedVehicle(vehicle, i + 1);
                             Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
                             return;
                         }
@@ -353,17 +335,48 @@ namespace Prague_Parking_2._0
 
         public bool RemoveVehicle(string regNumber, bool removeBus)
         {
+
+
             foreach (ParkingSpot spot in garageList)
             {
                 foreach (Vehicle vehicle in spot.Spots)
                 {
-                    if (vehicle.RegNumber == regNumber && vehicle.EndParking)
+                    if (vehicle.RegNumber == regNumber && vehicle.EndParking && removeBus != true)
                     {
                         AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime}[/] ");
                         AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost}[/] ");
                         spot.Spots.Remove(vehicle);
-                        spot.ResetSpot();
+                        spot.UpdateSpot(vehicle);
                         return true;
+                    }
+                    else if (removeBus == true)
+                    {
+                        for (int j = 0; j < garageList.Count; j++)
+                        {
+                            ParkingSpot parkingSpot = garageList[j];
+                            ParkingSpot secondParkingSpot = garageList[j + 1];
+                            ParkingSpot thirdParkingSpot = garageList[j + 2];
+                            ParkingSpot fourthParkingSpot = garageList[j + 3];
+
+                            if (vehicle.RegNumber == regNumber)
+                            {
+                                //Need to add a function to calculate total cost
+                                garageList[j].Spots.Remove(vehicle);
+                                garageList[j].ResetSpot();
+                                garageList[j + 1].Spots.Remove(vehicle);
+                                garageList[j + 1].ResetSpot();
+                                garageList[j + 2].Spots.Remove(vehicle);
+                                garageList[j + 2].ResetSpot();
+                                garageList[j + 3].Spots.Remove(vehicle);
+                                garageList[j + 3].ResetSpot();
+                                Console.WriteLine("The bus has been reclaimed");
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
                     }
                     else
                     {
@@ -399,7 +412,7 @@ namespace Prague_Parking_2._0
             return null;
         }
 
-        internal ParkingSpot? FindSpot(Vehicle vehicle)
+        public ParkingSpot? FindSpot(Vehicle vehicle)
         {
             foreach (var spot in garageList)
             {
@@ -419,6 +432,7 @@ namespace Prague_Parking_2._0
         public bool MoveVehicle(string regNumber, bool selectSpace, int space, bool moveBus)
         {
             Vehicle? vehicle = FindVehicle(regNumber);
+
             if (vehicle != null && moveBus != true)
             {
                 RemoveVehicle(regNumber, false);
@@ -431,30 +445,30 @@ namespace Prague_Parking_2._0
             }
             return true;
         }
-        
+
         public void ShowColorParkingSpots()
         {
             int spotsPerRow = 10; // Number of parking spots per row
             Console.WriteLine("Parking grid - Compact view (Green = Free, Yellow = 1/2 full, Red = Busy)\n");
-            
+
             for (int i = 0; i < garageList.Count; i++)
             {
                 if (i % spotsPerRow == 0 && i != 0)
                 {
                     Console.WriteLine();
                 }
-                
+
                 ParkingSpot spot = garageList[i];
-                
+
                 if (spot.Available == 4)
                 {
                     Console.ForegroundColor = ConsoleColor.Green; // Free
                 }
-                else if (spot.Available > 0 && spot.Available < 4)
+                if (spot.Available > 0 && spot.Available < 4)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                 }
-                else if (spot.Available == 0)
+                else if (spot.Available <= 0)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
                 }
@@ -478,8 +492,6 @@ namespace Prague_Parking_2._0
                     foreach (Vehicle vehicle in spot.Spots)
                     {
                         Console.WriteLine($"Spot {spot.ID + 1}: {vehicle.GetType().Name} - Reg: {vehicle.RegNumber}");
-                        // Console.WriteLine(vehicle.ToString());
-
                         hasVehicles = true;
                     }
                 }
@@ -491,5 +503,6 @@ namespace Prague_Parking_2._0
             }
             Console.ResetColor();
         }
+
     }
 }
