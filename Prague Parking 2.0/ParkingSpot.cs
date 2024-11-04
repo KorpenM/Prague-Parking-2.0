@@ -7,58 +7,70 @@ namespace Prague_Parking_2._0
     public class ParkingSpot
     {
         public int ID { get; set; }
-        public int VehicleSpace { get; set; }
         public List<Vehicle> Spots { get; set; }
-        public Vehicle? ParkedVehicle { get; set; }
         public int SpotCapacity { get; set; } = 4;
         public int UsedCapacity { get; set; } = 0;
         public int Available { get; set; } = 4;
         public bool Occupied { get; set; } = false;
 
-        public void SetVehicleSpace(Vehicle vehicle)
-        {
-            VehicleSpace = vehicle.Space;
-        }
+        public bool CanPark { get; set; } = true;
+
+
 
         public ParkingSpot(int id)
         {
             ID = id;
             Spots = new List<Vehicle>();
-            Spots = new List<Vehicle>(); 
         }
 
-        public void ResetSpot()
+        public void CheckAvailability(Vehicle vehicle)
         {
-            UsedCapacity = 0;
-            Available = SpotCapacity - UsedCapacity;
-
-            if (Available > 0)
+            if (Available == 0 || vehicle.Space > Available)
             {
-                Occupied = false;
+                CanPark = false;
+            }
+            else if (vehicle.Space <= Available)
+            {
+                CanPark = true;
             }
         }
 
-        public void UpdateSpot(Vehicle vehicle)
+
+        public void Add(Vehicle vehicle)
         {
-            UsedCapacity += vehicle.Space;
+            if (vehicle.Space <= Available)
+            {
+                Spots.Add(vehicle);
+                UsedCapacity += vehicle.Space;
+                Available = SpotCapacity - UsedCapacity;
+            }
+            else
+            {
+                Console.WriteLine("No spots available.");
+            }
+        }
+
+        public void Remove(Vehicle vehicle)
+        {
+            Spots.Remove(vehicle);
+            UsedCapacity -= vehicle.Space;
             Available = SpotCapacity - UsedCapacity;
 
-            if (Available == 0)
-            {
-                Occupied = true;
-            }
         }
 
         public override string ToString()
         {
-            string info = "";
+            string[] info = [];
 
             foreach (Vehicle vehicle in Spots)
             {
-                return info =  vehicle.RegNumber + " " + vehicle.Space + " " + vehicle.GetType().Name;
+                string s = vehicle.RegNumber + " " + vehicle.Space + " " + vehicle.GetType().Name;
+                info.Append(s);
             }
 
-            return info;
+            return info.ToString();
+
+
         }
     }
 }

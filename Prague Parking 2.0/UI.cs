@@ -201,7 +201,7 @@ namespace Prague_Parking_2._0
 
             Console.Clear();
             string regNumber = AnsiConsole.Ask<string>("Type in the registration plate of the vehicle in question: \n");
-            Vehicle vehicle = null;
+            Vehicle? vehicle = null;
             bool parkingBus = false;
 
             switch (chosenVehicleType)
@@ -257,14 +257,17 @@ namespace Prague_Parking_2._0
             // Echo the confirmation back to the terminal
             Console.WriteLine(removeBus ? "Confirmed" : "Declined");
 
-            if (garage.RemoveVehicle(regNumber, removeBus))
+            if (regNumber != null)
             {
+                Console.WriteLine("Reg is not null, it is {0}", regNumber);
+                garage.RemoveVehicle(regNumber, removeBus);
                 //AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] has been removed");
             }
             else
             {
                 Console.WriteLine("Vehicle not found");
             }
+            
             Console.Write("Press random key to continue...");
             Console.ReadKey();
         }
@@ -282,7 +285,7 @@ namespace Prague_Parking_2._0
                     .WithConverter(choice => choice ? "y" : "n"));
             Console.WriteLine(moveBus ? "Confirmed" : "Declined");
 
-            if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 0)
+            if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 0 || toSpot > garage.garageList.Count)
             {
                 Console.WriteLine("Invalid spot number");
                 Console.Write("Press random key to continue...");
@@ -290,7 +293,7 @@ namespace Prague_Parking_2._0
                 return;
             }
 
-            if (garage.MoveVehicle(regNumber, true, toSpot, moveBus))
+            if (garage.MoveVehicle(regNumber, true, toSpot - 1, moveBus))
             {
                 Console.WriteLine("Vehicle moved successfully");
             }
