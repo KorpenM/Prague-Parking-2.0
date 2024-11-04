@@ -259,7 +259,9 @@ namespace Prague_Parking_2._0
 
             if (regNumber != null)
             {
-                Console.WriteLine("Reg is not null, it is {0}", regNumber);
+                Vehicle? vehicle = garage.FindVehicle(regNumber);
+                Console.WriteLine($"Total cost for parking: {vehicle?.CalculateParkingCost(DateTime.Now)}");
+                Console.WriteLine($"TIme parked: {vehicle? .CalculateParkingTime(DateTime.Now)}");
                 garage.RemoveVehicle(regNumber, removeBus);
                 //AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] has been removed");
             }
@@ -295,7 +297,7 @@ namespace Prague_Parking_2._0
 
             if (garage.MoveVehicle(regNumber, true, toSpot - 1, moveBus))
             {
-                Console.WriteLine("Vehicle moved successfully");
+                //Console.WriteLine("Vehicle moved successfully");
             }
             else
             {
