@@ -2,24 +2,18 @@ using PragueParking_2._0;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("GarageTest")]
 namespace Prague_Parking_2._0
 {
     public class ParkingSpot
     {
-        public int VehicleSpace { get; set; }
-
-        public List<Vehicle> Spots { get; set; }
         public int ID { get; set; }
-
+        public int VehicleSpace { get; set; }
+        public List<Vehicle> Spots { get; set; }
         public Vehicle? ParkedVehicle { get; set; }
-
         public int SpotCapacity { get; set; } = 4;
-
-        public bool Occupied { get; set; } = false;
-
         public int UsedCapacity { get; set; } = 0;
         public int Available { get; set; } = 4;
+        public bool Occupied { get; set; } = false;
 
         public void SetVehicleSpace(Vehicle vehicle)
         {
@@ -55,7 +49,6 @@ namespace Prague_Parking_2._0
             }
         }
 
-
         public override string ToString()
         {
             string info = "";
@@ -67,39 +60,5 @@ namespace Prague_Parking_2._0
 
             return info;
         }
-
-        //public bool CanAcceptVehicle(Vehicle vehicle)
-        //{
-
-        //    // Bus can only park at spots 0-49
-
-        //    // Bussar kan endast parkera på platser 0-49
-
-        //    if (vehicle.Type == "Bus" && ID >= 50)
-        //    {
-        //        return false;
-        //    }
-
-
-        //    // Spots 0-49 can accept all vehicles
-
-        //    // Spots 0-49 kan acceptera alla typer av fordon
-
-        //    if (ID < 50)
-        //    {
-        //        return true;
-        //    }
-        //    else
-        //    {
-
-        //        // Spots 50-99 can only accept Bike, MC och Car
-
-        //        // Spots 50-99 kan bara acceptera Bike, MC och Car
-
-        //        return vehicle.Type == "Bike" ||
-        //               vehicle.Type == "MC" ||
-        //               vehicle.Type == "Car";
-        //    }
-        //}
     }
 }
