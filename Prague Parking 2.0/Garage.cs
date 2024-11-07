@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Xml;
 using PragueParking_2._0;
+using System.Text.Json;
 
 namespace Prague_Parking_2._0
 {
@@ -78,6 +79,7 @@ namespace Prague_Parking_2._0
                 Console.WriteLine("Parking data file not found. No previous parking data loaded.");
             }
         }
+
         public void SaveParkingData()
         {
             var parkingData = new ParkingData();
@@ -103,22 +105,50 @@ namespace Prague_Parking_2._0
         }
 
 
-
-        private void AddAndSaveParkedVehicle(Vehicle vehicle, params int[] spots)
+        public void AddAndSaveParkedVehicle(Vehicle vehicle, int parkingSpotId)
         {
-            foreach (int spot in spots)
+            // Hitta rätt parkeringsplats i listan baserat på ID
+            var parkingSpot = garageList.FirstOrDefault(spot => spot.ID == parkingSpotId - 1);
+            if (parkingSpot != null)
             {
-                ParkedVehicles.Add(new ParkedVehicle
+                // Kontrollera om fordonet redan är parkerat på platsen
+                if (!parkingSpot.Spots.Any(v => v.RegNumber == vehicle.RegNumber))
                 {
-                    RegistrationNumber = vehicle.RegNumber,
-                    VehicleType = vehicle.GetType().Name,
-                    ParkingSpot = spot,
-                    EntryTime = DateTime.Now
-                });
-            }
+                    parkingSpot.Spots.Add(vehicle);
+                    parkingSpot.UpdateSpot(vehicle); // Uppdaterar tillgängliga platser på parkeringsplatsen
 
-            SaveParkingData(); // Spara parkeringstillståndet i JSON-fil
+                    // Skapa objektet som ska serialiseras
+                    var parkingData = new ParkingData
+                    {
+                        ParkingSpots = garageList.Select(spot => new ParkingSpotData
+                        {
+                            ID = spot.ID,
+                            Vehicles = spot.Spots.Select(v => new VehicleData
+                            {
+                                RegNumber = v.RegNumber,
+                                Type = v.GetType().Name,
+                                ParkingStartTime = v.ParkingStartime
+                            }).ToList()
+                        }).ToList()
+                    };
+
+                    // Serialisera och spara data i parking_data.json med JsonConvert från Newtonsoft
+                    var json = JsonConvert.SerializeObject(parkingData, Newtonsoft.Json.Formatting.Indented);
+                    File.WriteAllText("parking_data.json", json);
+
+                    Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {parkingSpotId} and saved to parking_data.json.");
+                }
+                else
+                {
+                    // Console.WriteLine($"Vehicle {vehicle.RegNumber} is already parked at spot {parkingSpotId}.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Could not find the specified parking spot.");
+            }
         }
+
 
         public void ShowParkingData()
         {
@@ -252,7 +282,7 @@ namespace Prague_Parking_2._0
                         garageList[i].UpdateSpot(vehicle);
                         AddAndSaveParkedVehicle(vehicle, i + 1);
                         Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1}");
-                        Console.WriteLine($"There are now {parkingSpot.Available} spaces available on the old spot.");
+                        Console.WriteLine($"There are now {parkingSpot.Available} spaces available on the spot.");
                         return;
                     }
                     else if (parkingBus == true)
@@ -333,61 +363,63 @@ namespace Prague_Parking_2._0
             }
         }
 
-        public bool RemoveVehicle(string regNumber, bool removeBus)
+
+        public bool RemoveVehicle(string regNumber, bool v)
         {
-
-
             foreach (ParkingSpot spot in garageList)
             {
                 foreach (Vehicle vehicle in spot.Spots)
                 {
-                    if (vehicle.RegNumber == regNumber && vehicle.EndParking && removeBus != true)
+                    if (vehicle.RegNumber == regNumber && vehicle.EndParking)
                     {
                         AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime}[/] ");
-                        AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost}[/] ");
+                        AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost(DateTime.Now)}[/] ");
+
                         spot.Spots.Remove(vehicle);
                         spot.UpdateSpot(vehicle);
+
                         return true;
                     }
-                    else if (removeBus == true)
+
+                    else if (vehicle.RegNumber == regNumber)
                     {
                         for (int j = 0; j < garageList.Count; j++)
                         {
                             ParkingSpot parkingSpot = garageList[j];
-                            ParkingSpot secondParkingSpot = garageList[j + 1];
-                            ParkingSpot thirdParkingSpot = garageList[j + 2];
-                            ParkingSpot fourthParkingSpot = garageList[j + 3];
-
                             if (vehicle.RegNumber == regNumber)
                             {
-                                //Need to add a function to calculate total cost
                                 garageList[j].Spots.Remove(vehicle);
-                                garageList[j].ResetSpot();
-                                garageList[j + 1].Spots.Remove(vehicle);
-                                garageList[j + 1].ResetSpot();
-                                garageList[j + 2].Spots.Remove(vehicle);
-                                garageList[j + 2].ResetSpot();
-                                garageList[j + 3].Spots.Remove(vehicle);
-                                garageList[j + 3].ResetSpot();
-                                Console.WriteLine("The bus has been reclaimed");
+                                //garageList[j].ResetSpot();
+
+                                if (j + 1 < garageList.Count)
+                                {
+                                    garageList[j + 1].Spots.Remove(vehicle);
+                                    //garageList[j + 1].ResetSpot();
+                                }
+                                if (j + 2 < garageList.Count)
+                                {
+                                    garageList[j + 2].Spots.Remove(vehicle);
+                                    //garageList[j + 2].ResetSpot();
+                                }
+                                if (j + 3 < garageList.Count)
+                                {
+                                    garageList[j + 3].Spots.Remove(vehicle);
+                                    //garageList[j + 3].ResetSpot();
+                                }
+
+                                Console.WriteLine("The vehicle has been successfully removed.");
                                 return true;
-                            }
-                            else
-                            {
-                                return false;
                             }
                         }
                     }
-                    else
-                    {
-                        spot.Spots.Remove(vehicle);
-                        spot.ResetSpot();
-                        return true;
-                    }
                 }
             }
+
+
+            Console.WriteLine($"Vehicle with registration number {regNumber} not found.");
             return false;
         }
+
 
         public Vehicle? FindVehicle(string regNumber)
         {
@@ -397,20 +429,13 @@ namespace Prague_Parking_2._0
                 {
                     if (vehicle.RegNumber == regNumber)
                     {
-                        int spotNumber = spot.ID;
                         return vehicle;
                     }
-                    else
-                    {
-                        //changed from return null to continue to make move bus work
-                        continue;
-                    }
                 }
-                //changed from return null to continue to make move bus work
-                continue;
             }
-            return null;
+            return null; // Returnera null om ingen matchning hittas
         }
+
 
         public ParkingSpot? FindSpot(Vehicle vehicle)
         {
@@ -420,14 +445,11 @@ namespace Prague_Parking_2._0
                 {
                     return spot;
                 }
-                else
-                {
-                    return null;
-                }
-
             }
-            return null;
+            return null; // Returnera null om ingen matchning hittas i någon parkeringsplats
         }
+
+
 
         public bool MoveVehicle(string regNumber, bool selectSpace, int space, bool moveBus)
         {
@@ -485,6 +507,40 @@ namespace Prague_Parking_2._0
             Console.WriteLine("=== Registered Vehicles ===\n");
 
             bool hasVehicles = false;
+            var printedVehicles = new HashSet<string>();  // Används för att spåra vilka fordon som redan skrivits ut
+
+            foreach (var spot in garageList)
+            {
+                if (spot.Available < 4)
+                {
+                    foreach (Vehicle vehicle in spot.Spots)
+                    {
+                        // Kontrollera om fordonet redan har skrivits ut
+                        if (!printedVehicles.Contains(vehicle.RegNumber))
+                        {
+                            Console.WriteLine($"Spot {spot.ID + 1}: {vehicle.GetType().Name} - Reg: {vehicle.RegNumber}");
+                            printedVehicles.Add(vehicle.RegNumber);  // Lägg till fordonets regnummer i setet
+                            hasVehicles = true;
+                        }
+                    }
+                }
+            }
+
+            if (!hasVehicles)
+            {
+                Console.WriteLine("No registered vehicles found.");
+            }
+            Console.ResetColor();
+        }
+
+
+        /*public void PrintRegisteredVehicles()
+        {
+            Console.Clear();
+            Console.WriteLine("=== Registered Vehicles ===\n");
+
+            bool hasVehicles = false;
+
 
             foreach (var spot in garageList)
             {
@@ -503,6 +559,11 @@ namespace Prague_Parking_2._0
                 Console.WriteLine("No registered vehicles found.");
             }
             Console.ResetColor();
+        }*/
+
+        internal bool RemoveVehicle(string regNumber)
+        {
+            throw new NotImplementedException();
         }
     }
 }

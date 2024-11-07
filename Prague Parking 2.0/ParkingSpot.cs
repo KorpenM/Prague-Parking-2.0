@@ -27,7 +27,7 @@ namespace Prague_Parking_2._0
             Spots = new List<Vehicle>(); 
         }
 
-        public void ResetSpot()
+        /*public void ResetSpot()
         {
             UsedCapacity = 0;
             Available = SpotCapacity - UsedCapacity;
@@ -36,9 +36,20 @@ namespace Prague_Parking_2._0
             {
                 Occupied = false;
             }
+        }*/
+
+        public void ResetSpot()
+        {
+            // Återställ UsedCapacity för alla parkerade fordon på denna plats
+            UsedCapacity = 0;
+            Available = SpotCapacity - UsedCapacity;
+
+            // Om det finns någon ledig plats, markera som icke-ockuperad
+            Occupied = Available != SpotCapacity;  // Om inte hela platsen är ledig, markera som ockuperad
         }
 
-        public void UpdateSpot(Vehicle vehicle)
+
+        /*public void UpdateSpot(Vehicle vehicle)
         {
             UsedCapacity += vehicle.Space;
             Available = SpotCapacity - UsedCapacity;
@@ -47,7 +58,18 @@ namespace Prague_Parking_2._0
             {
                 Occupied = true;
             }
+        }*/
+
+        public void UpdateSpot(Vehicle vehicle)
+        {
+            // Om det finns flera parkeringsplatser för denna fordonstyp (t.ex. en buss)
+            UsedCapacity += vehicle.Space;
+            Available = SpotCapacity - UsedCapacity;
+
+            // Om hela platsen är ockuperad, sätt Occupied till true
+            Occupied = UsedCapacity >= SpotCapacity;
         }
+
 
         public override string ToString()
         {
