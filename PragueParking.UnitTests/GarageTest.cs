@@ -7,33 +7,55 @@ namespace PragueParking.UnitTests
     public class GarageTest
     {
         [TestMethod]
-        public void RemoveVehicle_NoVehicleParked_ReturnFalse()
+        public void FindVehicle_CarFound_ReturnTrue()
         {
             //Arrange
             var garage = new Garage();
+            
             string registrationPlate = "FTD123";
+            Car myCar = new Car(registrationPlate);
+            
+            bool foundParkedCar = false;
 
             //Act
-            var result = garage.RemoveVehicle(registrationPlate);
+            garage.ParkVehicle(myCar, false, 0, false);
+            
+            var result = garage.FindVehicle(registrationPlate);
+            
+            if (result != null)
+            {
+                foundParkedCar = true;
+            }
 
             //Assert
-            Assert.IsFalse(result);
-        }        
-        
+            Assert.IsTrue(foundParkedCar);
+        }
+
         [TestMethod]
-        public void RemoveVehicle_ParkedVehicleRemoved_ReturnTrue()
+        public void FindVehicle_CarNotFound_ReturnFalse()
         {
             //Arrange
             var garage = new Garage();
-            string registrationPlate = "FTD321";
-            var vehicle = new Car(registrationPlate);
-            garage.ParkVehicle(vehicle, true, 4);
+
+            string registrationPlate = "FTD123";
+            Car myCar = new Car(registrationPlate);
+
+            string wrongRegistrationPlate = "FTD124";
+
+            bool foundParkedCar = false;
 
             //Act
-            var result = garage.RemoveVehicle(registrationPlate);
+            garage.ParkVehicle(myCar, false, 0, false);
+
+            var result = garage.FindVehicle(wrongRegistrationPlate);
+
+            if (result != null)
+            {
+                foundParkedCar = true;
+            }
 
             //Assert
-            Assert.IsTrue(result);
+            Assert.IsFalse(foundParkedCar);
         }
     }
 }
