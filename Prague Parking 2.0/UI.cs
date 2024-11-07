@@ -292,7 +292,6 @@ namespace Prague_Parking_2._0
             {
                 //AnsiConsole.Markup($"{vehicle.TypeOfVehicle} with registration number [blue]{regNumber}[/] has been parked");
                 garage.ParkVehicle(vehicle, false, 0, parkingBus);
-                Console.WriteLine("UI Parked");
             }
             else
             {
