@@ -335,10 +335,8 @@ namespace Prague_Parking_2._0
         {
             Console.Clear();
 
-            // Be om registreringsnummer från användaren
             string regNumber = AnsiConsole.Ask<string>("Enter the registration number of the vehicle you want to move: ");
 
-            // Fråga användaren om det är en buss som ska flyttas
             bool moveBus = AnsiConsole.Prompt(
                 new TextPrompt<bool>("Is the vehicle you're reclaiming a bus?")
                     .AddChoice(true)
@@ -348,7 +346,6 @@ namespace Prague_Parking_2._0
 
             Console.WriteLine(moveBus ? "Bus confirmed" : "Other vehicle confirmed");
 
-            // Be om nytt parkeringsplatsnummer
             if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 1)
             {
                 Console.WriteLine("Invalid spot number. Please enter a valid spot number.");
@@ -357,7 +354,6 @@ namespace Prague_Parking_2._0
                 return;
             }
 
-            // Försök flytta fordonet
             bool isMoveSuccessful = garage.MoveVehicle(regNumber, true, toSpot, moveBus);
 
             if (isMoveSuccessful)
@@ -373,74 +369,6 @@ namespace Prague_Parking_2._0
             Console.ReadKey();
         }
 
-
-
-        /*private static void MoveVehicle(Garage garage)
-        {
-            Console.Clear();
-            string regNumber = AnsiConsole.Ask<string>("Enter the registration number of the vehicle you want to move: ");
-
-            bool moveBus = AnsiConsole.Prompt(
-                new TextPrompt<bool>("Is the vehicle you're reclaiming a bus?")
-                    .AddChoice(true)
-                    .AddChoice(false)
-                    .DefaultValue(false)
-                    .WithConverter(choice => choice ? "y" : "n"));
-            Console.WriteLine(moveBus ? "Confirmed" : "Declined");
-
-            if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 0)
-            {
-                Console.WriteLine("Invalid spot number");
-                Console.Write("Press random key to continue...");
-                Console.ReadKey();
-                return;
-            }
-
-            if (garage.MoveVehicle(regNumber, true, toSpot, moveBus))
-            {
-                Console.WriteLine("Vehicle moved successfully");
-            }
-            else
-            {
-                Console.WriteLine("Failed to move vehicle. Check if it exists and if spots are valid");
-            }
-
-            Console.Write("\nPress random key to continue...");
-            Console.ReadKey();
-        }*/
-
-        //private static void MoveVehicle(Garage garage)
-        //{
-        //    Console.Clear();
-        //    string regNumber = AnsiConsole.Ask<string>("Enter the registration number of the vehicle you want to move: ");
-        //    if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move from: "), out int fromSpot) || fromSpot < 0)
-        //    {
-        //        Console.WriteLine("Invalid spot number");
-        //        Console.Write("Press random key to continue...");
-        //        Console.ReadKey();
-        //        return;
-        //    }
-
-        //    if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 0)
-        //    {
-        //        Console.WriteLine("Invalid spot number");
-        //        Console.Write("Press random key to continue...");
-        //        Console.ReadKey();
-        //        return;
-        //    }
-
-        //    if (garage.MoveVehicle(regNumber, fromSpot, toSpot))
-        //    {
-        //        Console.WriteLine("Vehicle moved successfully");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine("Failed to move vehicle. Check if it exists and if spots are valid");
-        //    }
-
-        //    Console.Write("\nPress random key to continue...");
-        //    Console.ReadKey();
-        //}
 
         private static void SearchVehicle(Garage garage)
         {
