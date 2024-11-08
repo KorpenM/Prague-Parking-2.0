@@ -372,7 +372,7 @@ namespace Prague_Parking_2._0
 
                 foreach (Vehicle vehicle in spot.Spots.ToList())
                 {
-                    // Vanligt fordon
+                    /*// Vanligt fordon
                     if (!isBus && vehicle.RegNumber == regNumber && vehicle.EndParking)
                     {
                         AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime(DateTime.Now)}[/] ");
@@ -383,7 +383,20 @@ namespace Prague_Parking_2._0
 
                         Console.WriteLine($"Vehicle {vehicle.RegNumber} removed from spot {spot.ID + 1}");
                         return true;
+                    }*/
+                    // Vanligt fordon
+                    if (!isBus && vehicle.RegNumber == regNumber)
+                    {
+                        AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime(DateTime.Now)}[/] ");
+                        AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost(DateTime.Now)}[/] ");
+
+                        spot.Spots.Remove(vehicle);
+                        spot.ResetSpot(); // Återställ platsen
+
+                        Console.WriteLine($"Vehicle {vehicle.RegNumber} removed from spot {spot.ID + 1}");
+                        return true;
                     }
+
                     // Buss
                     else if (isBus && vehicle.RegNumber == regNumber)
                     {
