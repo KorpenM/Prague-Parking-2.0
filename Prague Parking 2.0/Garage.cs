@@ -349,11 +349,6 @@ namespace Prague_Parking_2._0
                             Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
                             return;
                         }
-                        else if (i > 46)
-                        {
-                            Console.WriteLine("There's no available parking spots left to park this bus at");
-                            return;
-                        }
                         else
                         {
                             continue;
@@ -445,6 +440,11 @@ namespace Prague_Parking_2._0
         public bool MoveVehicle(string regNumber, bool selectSpace, int space, bool moveBus)
         {
             Vehicle? vehicle = FindVehicle(regNumber);
+
+            if (garageList[space].Occupied != true || vehicle.Space > garageList[space].Available)
+            {
+                return false;
+            }
 
             if (vehicle != null && moveBus != true)
             {
