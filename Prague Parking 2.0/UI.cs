@@ -170,7 +170,7 @@ namespace Prague_Parking_2._0
 
                 AnsiConsole.Markup($"[bold cyan]{formattedJson}[/]");
 
-                AnsiConsole.Markup(formattedJson);
+                //AnsiConsole.Markup(formattedJson);
 
             }
             else
