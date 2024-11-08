@@ -17,14 +17,14 @@ namespace Prague_Parking_2._0
         //public void ParkVehicle(Vehicle vehicle);
 
     }
-    class Garage
+    public class Garage
     {
         public string RegNumber { get; set; }
         private int capacity = 100;
         public List<ParkingSpot> garageList = new List<ParkingSpot>();
         public ParkingSettings settings; // Store settings from JSON
 
-        public List<ParkedVehicle> ParkedVehicles { get; set; } = new List<ParkedVehicle>();
+        List<ParkedVehicle> ParkedVehicles { get; set; } = new List<ParkedVehicle>();
 
 
         public Garage() // Constructor for Garage
