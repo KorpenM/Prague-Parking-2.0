@@ -379,6 +379,7 @@ namespace Prague_Parking_2._0
                         AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost(DateTime.Now)}[/] ");
 
                         spot.Spots.Remove(vehicle);
+                        spot.ResetSpot();
                         // spot.ResetSpot(); // Återställ platsen
 
                         Console.WriteLine($"Vehicle {vehicle.RegNumber} removed from spot {spot.ID + 1}");
