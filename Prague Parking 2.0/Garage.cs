@@ -446,6 +446,11 @@ namespace Prague_Parking_2._0
         {
             Vehicle? vehicle = FindVehicle(regNumber);
 
+            if (garageList[space].Occupied != true || vehicle.Space > garageList[space].Available)
+            {
+                return false;
+            }
+
             if (vehicle != null && moveBus != true)
             {
                 RemoveVehicle(regNumber, false);

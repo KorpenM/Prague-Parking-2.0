@@ -293,6 +293,13 @@ namespace Prague_Parking_2._0
                 Console.ReadKey();
                 return;
             }
+            else if (moveBus == true && toSpot > 46)
+            {
+                Console.WriteLine("Invalid spot number for buses. Please enter a valid spot number.");
+                Console.Write("Press any key to continue...");
+                Console.ReadKey();
+                return;
+            }
 
             bool isMoveSuccessful = garage.MoveVehicle(regNumber, true, toSpot, moveBus);
 
