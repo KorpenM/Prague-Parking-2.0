@@ -155,66 +155,6 @@ namespace Prague_Parking_2._0
         }
 
 
-        /*private static void EditSettings(Garage garage)
-        {
-            Console.Clear();
-            AnsiConsole.Markup("[bold yellow]Editing Parking Settings:[/]\n");
-
-            // Redigera allmänna garageinställningar
-            garage.settings.TotalSpots = AnsiConsole.Ask<int>("Enter total parking spots: ");
-            garage.settings.FreeParkingMinutes = AnsiConsole.Ask<int>("Enter free parking minutes: ");
-
-            // Initiera VehicleTypes om det är null
-            if (garage.settings.VehicleTypes == null)
-            {
-                garage.settings.VehicleTypes = new Dictionary<string, VehicleTypeInfo>
-        {
-            { "Bike", new VehicleTypeInfo() },
-            { "Motorcycle", new VehicleTypeInfo() },
-            { "Car", new VehicleTypeInfo() },
-            { "Bus", new VehicleTypeInfo() }
-        };
-            }
-
-            // Redigera befintliga fordonstyper
-            foreach (var vehicleType in garage.settings.VehicleTypes)
-            {
-                AnsiConsole.Markup($"\n--- [bold cyan]{vehicleType.Key} Settings ---[/]");
-                vehicleType.Value.SpaceRequired = AnsiConsole.Ask<int>($"Enter space required for {vehicleType.Key}: ");
-                vehicleType.Value.RatePerHour = AnsiConsole.Ask<int>($"Enter rate per hour for {vehicleType.Key}: ");
-                vehicleType.Value.AllowedSpots = AnsiConsole.Ask<string>($"Enter allowed spots for {vehicleType.Key}: ");
-                vehicleType.Value.NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>($"Enter number of vehicles per spot for {vehicleType.Key}: ");
-            }
-
-            // Möjlighet att lägga till en ny fordonstyp
-            if (AnsiConsole.Confirm("Would you like to add a new vehicle type?"))
-            {
-                string newVehicleType = AnsiConsole.Ask<string>("Enter the new vehicle type name: ");
-                if (!garage.settings.VehicleTypes.ContainsKey(newVehicleType))
-                {
-                    var newVehicleInfo = new VehicleTypeInfo
-                    {
-                        SpaceRequired = AnsiConsole.Ask<int>("Enter space required: "),
-                        RatePerHour = AnsiConsole.Ask<int>("Enter rate per hour: "),
-                        AllowedSpots = AnsiConsole.Ask<string>("Enter allowed spots: "),
-                        NumberOfVehiclesPerSpot = AnsiConsole.Ask<int>("Enter number of vehicles per spot: ")
-                    };
-
-                    garage.settings.VehicleTypes[newVehicleType] = newVehicleInfo;
-                    AnsiConsole.Markup($"[green]Added new vehicle type: {newVehicleType}[/]\n");
-                }
-                else
-                {
-                    AnsiConsole.Markup("[red]This vehicle type already exists.[/]");
-                }
-            }
-
-            // Spara inställningar efter redigering
-            garage.SaveSettings();
-            AnsiConsole.Markup("[green]Settings have been saved successfully.[/]\n");
-        }*/
-
-
         private static void ShowSettings(Garage garage)
         {
             Console.Clear();
