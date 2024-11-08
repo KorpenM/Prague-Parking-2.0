@@ -334,6 +334,50 @@ namespace Prague_Parking_2._0
         private static void MoveVehicle(Garage garage)
         {
             Console.Clear();
+
+            // Be om registreringsnummer från användaren
+            string regNumber = AnsiConsole.Ask<string>("Enter the registration number of the vehicle you want to move: ");
+
+            // Fråga användaren om det är en buss som ska flyttas
+            bool moveBus = AnsiConsole.Prompt(
+                new TextPrompt<bool>("Is the vehicle you're reclaiming a bus?")
+                    .AddChoice(true)
+                    .AddChoice(false)
+                    .DefaultValue(false)
+                    .WithConverter(choice => choice ? "y" : "n"));
+
+            Console.WriteLine(moveBus ? "Bus confirmed" : "Other vehicle confirmed");
+
+            // Be om nytt parkeringsplatsnummer
+            if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 1)
+            {
+                Console.WriteLine("Invalid spot number. Please enter a valid spot number.");
+                Console.Write("Press any key to continue...");
+                Console.ReadKey();
+                return;
+            }
+
+            // Försök flytta fordonet
+            bool isMoveSuccessful = garage.MoveVehicle(regNumber, true, toSpot, moveBus);
+
+            if (isMoveSuccessful)
+            {
+                AnsiConsole.Markup($"[green]Vehicle with registration number {regNumber} has been moved successfully.[/]");
+            }
+            else
+            {
+                AnsiConsole.Markup($"[red]Failed to move vehicle with registration number {regNumber}. Check if it exists and if spots are valid.[/]");
+            }
+
+            Console.Write("\nPress any key to continue...");
+            Console.ReadKey();
+        }
+
+
+
+        /*private static void MoveVehicle(Garage garage)
+        {
+            Console.Clear();
             string regNumber = AnsiConsole.Ask<string>("Enter the registration number of the vehicle you want to move: ");
 
             bool moveBus = AnsiConsole.Prompt(
@@ -363,7 +407,7 @@ namespace Prague_Parking_2._0
 
             Console.Write("\nPress random key to continue...");
             Console.ReadKey();
-        }
+        }*/
 
         //private static void MoveVehicle(Garage garage)
         //{
