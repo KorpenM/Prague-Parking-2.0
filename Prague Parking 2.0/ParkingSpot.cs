@@ -48,7 +48,6 @@ namespace Prague_Parking_2._0
             Occupied = Available != SpotCapacity;  // Om inte hela platsen är ledig, markera som ockuperad
         }
 
-
         /*public void UpdateSpot(Vehicle vehicle)
         {
             UsedCapacity += vehicle.Space;
@@ -60,7 +59,7 @@ namespace Prague_Parking_2._0
             }
         }*/
 
-        public void UpdateSpot(Vehicle vehicle)
+        /*public void UpdateSpot(Vehicle vehicle)
         {
             // Om det finns flera parkeringsplatser för denna fordonstyp (t.ex. en buss)
             UsedCapacity += vehicle.Space;
@@ -68,7 +67,18 @@ namespace Prague_Parking_2._0
 
             // Om hela platsen är ockuperad, sätt Occupied till true
             Occupied = UsedCapacity >= SpotCapacity;
+        }*/
+
+        public void UpdateSpot(Vehicle vehicle)
+        {
+            // Minska den använda platsen baserat på fordonets storlek
+            this.Available += vehicle.Space;
+
+            // Säkerställ att tillgängligheten aldrig överstiger det maximala antalet
+            if (this.Available > 4)
+                this.Available = 4;
         }
+
 
 
         public override string ToString()
