@@ -17,6 +17,7 @@ namespace Prague_Parking_2._0
         public UI(Garage garage)
         {
             garage.LoadParkingData();
+            garage.InitializeParkingData();
 
             do
             {

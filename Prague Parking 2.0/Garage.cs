@@ -556,5 +556,21 @@ namespace Prague_Parking_2._0
             }
             Console.ResetColor();
         }
+
+        public void InitializeParkingData()
+        {
+            // Om filen inte finns, skapa en ny med tom data
+            if (!File.Exists("parking_data.json"))
+            {
+                var emptyParkingData = new ParkingData
+                {
+                    ParkingSpots = new List<ParkingSpotData>()
+                };
+
+                string json = JsonConvert.SerializeObject(emptyParkingData, Newtonsoft.Json.Formatting.Indented);
+                File.WriteAllText("parking_data.json", json);
+            }
+        }
+
     }
 }
