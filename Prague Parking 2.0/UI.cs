@@ -71,6 +71,7 @@ namespace Prague_Parking_2._0
                         break;
                     case "Search Vehicle":
                         SearchVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Show All Registered Vehicles":
                         ShowRegisteredVehicles(garage);
