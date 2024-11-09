@@ -439,7 +439,7 @@ namespace Prague_Parking_2._0
 
 
 
-        public bool MoveVehicle(string regNumber, bool selectSpace, int space, bool moveBus)
+        /*public bool MoveVehicle(string regNumber, bool selectSpace, int space, bool moveBus)
         {
             Vehicle? vehicle = FindVehicle(regNumber);
 
@@ -459,7 +459,42 @@ namespace Prague_Parking_2._0
                 ParkVehicle(vehicle, true, space - 1, true);
             }
             return true;
+        }*/
+
+
+        public bool MoveVehicle(string regNumber, bool selectSpace, int space, bool moveBus)
+        {
+            // Kontrollera om platsen finns i listan (exempelvis om space är ett giltigt index)
+            if (space < 0 || space >= garageList.Count)
+            {
+                return false; // Ogiltig parkeringsplats
+            }
+
+            Vehicle? vehicle = FindVehicle(regNumber);
+
+            if (vehicle == null)
+            {
+                return false; // Fordonet finns inte
+            }
+
+            var currentSpot = garageList.FirstOrDefault(spot => spot.Spots.Any(v => v.RegNumber == regNumber));
+            if (currentSpot == null)
+            {
+                return false; // Fordonet är inte parkerat någonstans
+            }
+
+            var targetSpot = garageList[space]; // Om index är korrekt, hämta parkeringsplatsen
+            if (targetSpot.Occupied)
+            {
+                return false; // Den nya platsen är upptagen
+            }
+
+            // Flytta fordonet
+            RemoveVehicle(regNumber, moveBus);
+            ParkVehicle(vehicle, true, space, moveBus);
+            return true;
         }
+
 
 
         public void ShowColorParkingSpots()
