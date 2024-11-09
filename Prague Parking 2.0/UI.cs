@@ -44,6 +44,7 @@ namespace Prague_Parking_2._0
                 "Show Current Settings",
                 "Show Parking Data",
                 "Add New Vehicle Type",
+                "Save Parking Data",
                 "Exit"
             };
 
@@ -58,18 +59,22 @@ namespace Prague_Parking_2._0
                 {
                     case "Park Vehicle":
                         AddVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Retrieve Vehicle":
                         RemoveVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Move Vehicle":
                         MoveVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Search Vehicle":
                         SearchVehicle(garage);
                         break;
                     case "Show All Registered Vehicles":
                         ShowRegisteredVehicles(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Edit Parking Settings":
                         EditSettings(garage);
@@ -81,13 +86,20 @@ namespace Prague_Parking_2._0
                         break;
                     case "Show Parking Data":
                         garage.ShowParkingData();
+                        garage.SaveParkingData();
                         break;
                     case "Add New Vehicle Type":
                         garage.AddNewVehicleType();
                         garage.SaveParkingData();
                         break;
+                    case "Save Parking Data":
+                        garage.SaveParkingData();
+                        Console.WriteLine("Data saved");
+                        Console.ReadKey();
+                        break;
                     case "Exit":
                         Console.Write("\nExiting program...");
+                        garage.SaveParkingData();
                         break;
                     default:
                         Console.Write("\nInvalid choice. Please try again...");

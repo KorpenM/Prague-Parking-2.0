@@ -80,7 +80,7 @@ namespace Prague_Parking_2._0
             }
         }
 
-        public void SaveParkingData()
+        /*public void SaveParkingData()
         {
             var parkingData = new ParkingData();
 
@@ -102,7 +102,56 @@ namespace Prague_Parking_2._0
 
             string json = JsonConvert.SerializeObject(parkingData, Newtonsoft.Json.Formatting.Indented);
             File.WriteAllText("parking_data.json", json);
+        }*/
+
+        public void SaveParkingData()
+        {
+            try
+            {
+                // Skapa en ny instans av ParkingData
+                var parkingData = new ParkingData();
+
+                // Initiera ParkingSpots-listan om den är null
+                if (parkingData.ParkingSpots == null)
+                {
+                    parkingData.ParkingSpots = new List<ParkingSpotData>();
+                }
+
+                // Loopa igenom alla parkeringsplatser
+                foreach (var spot in garageList)
+                {
+                    var spotData = new ParkingSpotData
+                    {
+                        ID = spot.ID,
+                        Vehicles = spot.Spots.Select(v => new VehicleData
+                        {
+                            RegNumber = v.RegNumber,
+                            Type = v.GetType().Name,
+                            ParkingStartTime = v.ParkingStartime
+                        }).ToList()
+                    };
+
+                    // Lägg till parkeringsplatsens data i listan
+                    parkingData.ParkingSpots.Add(spotData);
+                }
+
+                // Ange filens sökväg till programmets aktuella katalog
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
+
+                // Serialisera objektet till JSON
+                string json = JsonConvert.SerializeObject(parkingData, Newtonsoft.Json.Formatting.Indented);
+
+                // Skriv JSON-data till filen
+                File.WriteAllText(filePath, json);
+
+                Console.WriteLine("Parking data saved successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving parking data: {ex.Message}");
+            }
         }
+
 
 
         public void AddAndSaveParkedVehicle(Vehicle vehicle, int parkingSpotId)
@@ -283,6 +332,9 @@ namespace Prague_Parking_2._0
                         AddAndSaveParkedVehicle(vehicle, i + 1);
                         Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1}");
                         Console.WriteLine($"There are now {parkingSpot.Available} spaces available on the spot.");
+                        // return;
+
+                        SaveParkingData();
                         return;
                     }
                     else if (parkingBus == true)
@@ -298,8 +350,12 @@ namespace Prague_Parking_2._0
                             garageList[i + 2].UpdateSpot(vehicle);
                             garageList[i + 3].Spots.Add(vehicle);
                             garageList[i + 3].UpdateSpot(vehicle);
+
                             AddAndSaveParkedVehicle(vehicle, i + 1);
                             Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
+                            // return;
+
+                            SaveParkingData();
                             return;
                         }
                         else if (i > 46)
@@ -331,6 +387,9 @@ namespace Prague_Parking_2._0
                         garageList[space].UpdateSpot(vehicle);
                         Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {space + 1}");
                         Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
+                        // return;
+
+                        SaveParkingData();
                         return;
                     }
                     else if (parkingBus == true)
@@ -347,6 +406,9 @@ namespace Prague_Parking_2._0
                             garageList[i + 3].Spots.Add(vehicle);
                             garageList[i + 3].UpdateSpot(vehicle);
                             Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
+                            // return;
+
+                            SaveParkingData();
                             return;
                         }
                         else if (i > 46)
@@ -381,6 +443,7 @@ namespace Prague_Parking_2._0
                         spot.Spots.Remove(vehicle);
                         spot.UsedCapacity -= vehicle.Space;
                         spot.Available += vehicle.Space;
+                        SaveParkingData();
 
                         Console.WriteLine($"Vehicle {vehicle.RegNumber} removed from spot {spot.ID + 1}");
                         return true;
@@ -455,11 +518,13 @@ namespace Prague_Parking_2._0
             {
                 RemoveVehicle(regNumber, false);
                 ParkVehicle(vehicle, true, space - 1, false);
+                SaveParkingData();
             }
             else if (vehicle != null && moveBus == true)
             {
                 RemoveVehicle(regNumber, true);
                 ParkVehicle(vehicle, true, space - 1, true);
+                SaveParkingData();
             }
             return true;
         }
