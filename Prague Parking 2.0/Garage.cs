@@ -80,7 +80,7 @@ namespace Prague_Parking_2._0
             }
         }
 
-        /*public void SaveParkingData()
+        public void SaveParkingData()
         {
             var parkingData = new ParkingData();
 
@@ -99,74 +99,24 @@ namespace Prague_Parking_2._0
 
                 parkingData.ParkingSpots.Add(spotData);
             }
-
+            string jsonFilePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
             string json = JsonConvert.SerializeObject(parkingData, Newtonsoft.Json.Formatting.Indented);
-            File.WriteAllText("parking_data.json", json);
-        }*/
-
-        public void SaveParkingData()
-        {
-            try
-            {
-                // Skapa en ny instans av ParkingData
-                var parkingData = new ParkingData();
-
-                // Initiera ParkingSpots-listan om den är null
-                if (parkingData.ParkingSpots == null)
-                {
-                    parkingData.ParkingSpots = new List<ParkingSpotData>();
-                }
-
-                // Loopa igenom alla parkeringsplatser
-                foreach (var spot in garageList)
-                {
-                    var spotData = new ParkingSpotData
-                    {
-                        ID = spot.ID,
-                        Vehicles = spot.Spots.Select(v => new VehicleData
-                        {
-                            RegNumber = v.RegNumber,
-                            Type = v.GetType().Name,
-                            ParkingStartTime = v.ParkingStartime
-                        }).ToList()
-                    };
-
-                    // Lägg till parkeringsplatsens data i listan
-                    parkingData.ParkingSpots.Add(spotData);
-                }
-
-                // Ange filens sökväg till programmets aktuella katalog
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "parking_data.json");
-
-                // Serialisera objektet till JSON
-                string json = JsonConvert.SerializeObject(parkingData, Newtonsoft.Json.Formatting.Indented);
-
-                // Skriv JSON-data till filen
-                File.WriteAllText(filePath, json);
-
-                Console.WriteLine("Parking data saved successfully.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error saving parking data: {ex.Message}");
-            }
+            // File.WriteAllText("parking_data.json", json);
+            File.WriteAllText(jsonFilePath, json);
+            Console.WriteLine("Data saved.");
         }
-
 
 
         public void AddAndSaveParkedVehicle(Vehicle vehicle, int parkingSpotId)
         {
-            // Hitta rätt parkeringsplats i listan baserat på ID
             var parkingSpot = garageList.FirstOrDefault(spot => spot.ID == parkingSpotId - 1);
             if (parkingSpot != null)
             {
-                // Kontrollera om fordonet redan är parkerat på platsen
                 if (!parkingSpot.Spots.Any(v => v.RegNumber == vehicle.RegNumber))
                 {
                     parkingSpot.Spots.Add(vehicle);
-                    parkingSpot.UpdateSpot(vehicle); // Uppdaterar tillgängliga platser på parkeringsplatsen
+                    parkingSpot.UpdateSpot(vehicle); 
 
-                    // Skapa objektet som ska serialiseras
                     var parkingData = new ParkingData
                     {
                         ParkingSpots = garageList.Select(spot => new ParkingSpotData
@@ -180,8 +130,6 @@ namespace Prague_Parking_2._0
                             }).ToList()
                         }).ToList()
                     };
-
-                    // Serialisera och spara data i parking_data.json med JsonConvert från Newtonsoft
                     var json = JsonConvert.SerializeObject(parkingData, Newtonsoft.Json.Formatting.Indented);
                     File.WriteAllText("parking_data.json", json);
 
@@ -314,97 +262,7 @@ namespace Prague_Parking_2._0
         }
 
 
-        // Flytta SaveParkingData() till slutet av metoden
         public void ParkVehicle(Vehicle vehicle, bool selectSpace, int space, bool parkingBus)
-        {
-            bool parked = false; // Kontrollera om ett fordon har parkerats
-
-            if (!selectSpace && space == 0)
-            {
-                for (int i = 0; i < garageList.Count; i++)
-                {
-                    ParkingSpot parkingSpot = garageList[i];
-                    ParkingSpot secondParkingSpot = garageList[i + 1];
-                    ParkingSpot thirdParkingSpot = garageList[i + 2];
-                    ParkingSpot fourthParkingSpot = garageList[i + 3];
-
-                    if (vehicle.Space <= parkingSpot.Available && parkingBus != true)
-                    {
-                        garageList[i].Spots.Add(vehicle);
-                        garageList[i].UpdateSpot(vehicle);
-                        AddAndSaveParkedVehicle(vehicle, i + 1);
-                        Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {i + 1}");
-                        parked = true;
-                        break;
-                    }
-                    else if (parkingBus == true)
-                    {
-                        if (parkingSpot.Available == 4 && secondParkingSpot.Available == 4
-                           && thirdParkingSpot.Available == 4 && fourthParkingSpot.Available == 4)
-                        {
-                            garageList[i].Spots.Add(vehicle);
-                            garageList[i].UpdateSpot(vehicle);
-                            garageList[i + 1].Spots.Add(vehicle);
-                            garageList[i + 1].UpdateSpot(vehicle);
-                            garageList[i + 2].Spots.Add(vehicle);
-                            garageList[i + 2].UpdateSpot(vehicle);
-                            garageList[i + 3].Spots.Add(vehicle);
-                            garageList[i + 3].UpdateSpot(vehicle);
-
-                            AddAndSaveParkedVehicle(vehicle, i + 1);
-                            Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spots {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
-                            parked = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            else if (selectSpace == true && space != 0)
-            {
-                for (int i = 0; i < garageList.Count; i++)
-                {
-                    ParkingSpot parkingSpot = garageList[i];
-                    ParkingSpot secondParkingSpot = garageList[i + 1];
-                    ParkingSpot thirdParkingSpot = garageList[i + 2];
-                    ParkingSpot fourthParkingSpot = garageList[i + 3];
-
-                    if (vehicle.Space <= parkingSpot.Available && parkingBus != true)
-                    {
-                        garageList[space].Spots.Add(vehicle);
-                        garageList[space].UpdateSpot(vehicle);
-                        Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {space + 1}");
-                        parked = true;
-                        break;
-                    }
-                    else if (parkingBus == true)
-                    {
-                        if (i == space && parkingSpot.Available == 4 && secondParkingSpot.Available == 4
-                           && thirdParkingSpot.Available == 4 && fourthParkingSpot.Available == 4)
-                        {
-                            garageList[i].Spots.Add(vehicle);
-                            garageList[i].UpdateSpot(vehicle);
-                            garageList[i + 1].Spots.Add(vehicle);
-                            garageList[i + 1].UpdateSpot(vehicle);
-                            garageList[i + 2].Spots.Add(vehicle);
-                            garageList[i + 2].UpdateSpot(vehicle);
-                            garageList[i + 3].Spots.Add(vehicle);
-                            garageList[i + 3].UpdateSpot(vehicle);
-                            Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spots {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
-                            parked = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (parked)
-            {
-                SaveParkingData(); // Spara här när parkeringen är klar
-            }
-        }
-
-
-        /*public void ParkVehicle(Vehicle vehicle, bool selectSpace, int space, bool parkingBus)
         {
             if (!selectSpace && space == 0)
             {
@@ -437,7 +295,6 @@ namespace Prague_Parking_2._0
                             garageList[i + 2].UpdateSpot(vehicle);
                             garageList[i + 3].Spots.Add(vehicle);
                             garageList[i + 3].UpdateSpot(vehicle);
-
                             AddAndSaveParkedVehicle(vehicle, i + 1);
                             Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
                             return;
@@ -501,7 +358,7 @@ namespace Prague_Parking_2._0
                     }
                 }
             }
-        }*/
+        }
 
 
         public bool RemoveVehicle(string regNumber, bool isBus)
@@ -521,7 +378,6 @@ namespace Prague_Parking_2._0
                         spot.Spots.Remove(vehicle);
                         spot.UsedCapacity -= vehicle.Space;
                         spot.Available += vehicle.Space;
-                        SaveParkingData();
 
                         Console.WriteLine($"Vehicle {vehicle.RegNumber} removed from spot {spot.ID + 1}");
                         return true;
@@ -596,13 +452,11 @@ namespace Prague_Parking_2._0
             {
                 RemoveVehicle(regNumber, false);
                 ParkVehicle(vehicle, true, space - 1, false);
-                SaveParkingData();
             }
             else if (vehicle != null && moveBus == true)
             {
                 RemoveVehicle(regNumber, true);
                 ParkVehicle(vehicle, true, space - 1, true);
-                SaveParkingData();
             }
             return true;
         }
