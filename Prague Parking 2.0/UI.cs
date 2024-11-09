@@ -44,7 +44,6 @@ namespace Prague_Parking_2._0
                 "Show Current Settings",
                 "Show Parking Data",
                 "Add New Vehicle Type",
-                "Save Parking Data",
                 "Exit"
             };
 
@@ -92,11 +91,6 @@ namespace Prague_Parking_2._0
                     case "Add New Vehicle Type":
                         garage.AddNewVehicleType();
                         garage.SaveParkingData();
-                        break;
-                    case "Save Parking Data":
-                        garage.SaveParkingData();
-                        Console.WriteLine("Data saved");
-                        Console.ReadKey();
                         break;
                     case "Exit":
                         Console.Write("\nExiting program...");
