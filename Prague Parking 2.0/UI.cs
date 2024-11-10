@@ -162,7 +162,6 @@ namespace Prague_Parking_2._0
             }
         }
 
-
         private static void ShowSettings(Garage garage)
         {
             Console.Clear();
@@ -249,7 +248,6 @@ namespace Prague_Parking_2._0
             Console.ReadKey();
         }
 
-
         private static void RemoveVehicle(Garage garage)
         {
             Console.Clear();
@@ -277,7 +275,6 @@ namespace Prague_Parking_2._0
             Console.Write("Press random key to continue...");
             Console.ReadKey();
         }
-
 
         private static void MoveVehicle(Garage garage)
         {
@@ -323,7 +320,6 @@ namespace Prague_Parking_2._0
             Console.Write("\nPress any key to continue...");
             Console.ReadKey();
         }
-
 
         private static void SearchVehicle(Garage garage)
         {
