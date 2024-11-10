@@ -28,23 +28,23 @@ namespace Prague_Parking_2._0
 
         public void ResetSpot()
         {
-            // Återställ UsedCapacity för alla parkerade fordon på denna plats
+            // Ã…terstÃ¤ll UsedCapacity fÃ¶r alla parkerade fordon pÃ¥ denna plats
             UsedCapacity = 0;
             Available = SpotCapacity - UsedCapacity;
 
-            // Om det finns någon ledig plats, markera som icke-ockuperad
-            Occupied = Available != SpotCapacity;  // Om inte hela platsen är ledig, markera som ockuperad
+            // Om det finns nÃ¥gon ledig plats, markera som icke-ockuperad
+            Occupied = Available != SpotCapacity;  // Om inte hela platsen Ã¤r ledig, markera som ockuperad
         }
 
 
         public void UpdateSpot(Vehicle vehicle)
 
         {
-            // Om det finns flera parkeringsplatser för denna fordonstyp (t.ex. en buss)
+            // Om det finns flera parkeringsplatser fÃ¶r denna fordonstyp (t.ex. en buss)
             UsedCapacity += vehicle.Space;
             Available = SpotCapacity - UsedCapacity;
 
-            // Om hela platsen är ockuperad, sätt Occupied till true
+            // Om hela platsen Ã¤r ockuperad, sÃ¤tt Occupied till true
             Occupied = UsedCapacity >= SpotCapacity;
         }
 
