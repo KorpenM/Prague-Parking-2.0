@@ -361,7 +361,7 @@ namespace Prague_Parking_2._0
         }
 
 
-        public bool RemoveVehicle(string regNumber, bool isBus)
+        public bool RemoveVehicle(string regNumber, bool isBus, bool moveVehicle)
         {
             for (int i = 0; i < garageList.Count; i++)
             {
@@ -372,8 +372,11 @@ namespace Prague_Parking_2._0
                     // Vanligt fordon
                     if (!isBus && vehicle.RegNumber == regNumber)
                     {
-                        AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime(DateTime.Now)}[/] ");
-                        AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost(DateTime.Now)}[/] ");
+                        if (moveVehicle != true)
+                        {
+                            AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime(DateTime.Now)}[/] ");
+                            AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost(DateTime.Now)}[/] ");
+                        }
 
                         spot.Spots.Remove(vehicle);
                         spot.UsedCapacity -= vehicle.Space;
@@ -394,6 +397,13 @@ namespace Prague_Parking_2._0
                                 garageList[i + j].UsedCapacity = 0;
                                 garageList[i + j].Available = 4;
                             }
+
+                            if (moveVehicle != true)
+                            {
+                                AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime(DateTime.Now)}[/] ");
+                                AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost(DateTime.Now)}[/] ");
+                            }
+
                             Console.WriteLine($"Bus {vehicle.RegNumber} removed from spots {i + 1} to {i + 4}");
                             return true;
                         }
@@ -502,7 +512,7 @@ namespace Prague_Parking_2._0
             }
 
             // Flytta fordonet
-            RemoveVehicle(regNumber, moveBus);
+            RemoveVehicle(regNumber, moveBus, true);
             ParkVehicle(vehicle, true, space, moveBus);
             return true;
         }
