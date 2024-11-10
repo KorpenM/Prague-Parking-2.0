@@ -266,7 +266,7 @@ namespace Prague_Parking_2._0
             // Echo the confirmation back to the terminal
             Console.WriteLine(removeBus ? "Bus: confirmed" : "Other vehicle");
 
-            if (garage.RemoveVehicle(regNumber, removeBus, false))
+            if (garage.RemoveVehicle(regNumber, removeBus, 0, false))
             {
                 AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] has been removed");
             }
@@ -309,7 +309,7 @@ namespace Prague_Parking_2._0
                 return;
             }
 
-            bool isMoveSuccessful = garage.MoveVehicle(regNumber, true, toSpot, moveBus);
+            bool isMoveSuccessful = garage.MoveVehicle(regNumber, true, toSpot, moveBus, false);
 
             if (isMoveSuccessful)
             {

@@ -315,6 +315,8 @@ namespace Prague_Parking_2._0
             }
             else if (selectSpace == true && space != 0)
             {
+                space -= 1;
+
                 for (int i = 0; i < garageList.Count; i++)
                 {
                     ParkingSpot parkingSpot = garageList[i];
@@ -322,38 +324,43 @@ namespace Prague_Parking_2._0
                     ParkingSpot thirdParkingSpot = garageList[i + 2];
                     ParkingSpot fourthParkingSpot = garageList[i + 3];
 
-                    if (vehicle.Space <= parkingSpot.Available && parkingBus != true)
+                    if (parkingBus != true)
                     {
-                        garageList[space].Spots.Add(vehicle);
-                        garageList[space].UpdateSpot(vehicle);
-                        Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {space + 1}");
-                        Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
-                        return;
+                        if (i == space && vehicle.Space <= parkingSpot.Available)
+                        {
+                            garageList[space].Spots.Add(vehicle);
+                            garageList[space].UpdateSpot(vehicle);
+                            Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at {space + 1}");
+                            Console.WriteLine($"There are now {parkingSpot.Available} spaces on this spot available.");
+                            return;
+                        }
+                        else if (i == space && vehicle.Space > parkingSpot.Available)
+                        {
+                            Console.WriteLine("There isn't enough room to park the vehicle at this spot.");
+                            return;
+                        }
                     }
                     else if (parkingBus == true)
                     {
                         if (i == space && parkingSpot.Available == 4 && secondParkingSpot.Available == 4
                            && thirdParkingSpot.Available == 4 && fourthParkingSpot.Available == 4)
                         {
-                            garageList[i].Spots.Add(vehicle);
-                            garageList[i].UpdateSpot(vehicle);
-                            garageList[i + 1].Spots.Add(vehicle);
-                            garageList[i + 1].UpdateSpot(vehicle);
-                            garageList[i + 2].Spots.Add(vehicle);
-                            garageList[i + 2].UpdateSpot(vehicle);
-                            garageList[i + 3].Spots.Add(vehicle);
-                            garageList[i + 3].UpdateSpot(vehicle);
+                            garageList[space].Spots.Add(vehicle);
+                            garageList[space].UpdateSpot(vehicle);
+                            garageList[space + 1].Spots.Add(vehicle);
+                            garageList[space + 1].UpdateSpot(vehicle);
+                            garageList[space + 2].Spots.Add(vehicle);
+                            garageList[space + 2].UpdateSpot(vehicle);
+                            garageList[space + 3].Spots.Add(vehicle);
+                            garageList[space + 3].UpdateSpot(vehicle);
                             Console.WriteLine($"Vehicle {vehicle.GetType().Name} parked at spot {i + 1}, {i + 2}, {i + 3}, and {i + 4}");
                             return;
                         }
-                        else if (i > 46)
+                        else if (i == space && parkingSpot.Available > 4 && secondParkingSpot.Available > 4
+                           && thirdParkingSpot.Available > 4 && fourthParkingSpot.Available > 4)
                         {
-                            Console.WriteLine("There's no available parking spots left to park this bus at");
+                            Console.WriteLine("There isn't enough room to park the bus at this spot.");
                             return;
-                        }
-                        else
-                        {
-                            continue;
                         }
                     }
                 }
@@ -361,8 +368,10 @@ namespace Prague_Parking_2._0
         }
 
 
-        public bool RemoveVehicle(string regNumber, bool isBus, bool moveVehicle)
+        public bool RemoveVehicle(string regNumber, bool isBus, int moveFrom, bool moveVehicle)
         {
+            moveFrom -= 1;
+
             for (int i = 0; i < garageList.Count; i++)
             {
                 ParkingSpot spot = garageList[i];
@@ -374,54 +383,77 @@ namespace Prague_Parking_2._0
                     {
                         if (moveVehicle != true)
                         {
+                            spot.Spots.Remove(vehicle);
+                            spot.UsedCapacity -= vehicle.Space;
+                            spot.Available += vehicle.Space;
+
                             AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime(DateTime.Now)}[/] ");
                             AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost(DateTime.Now)}[/] ");
+
+                            Console.WriteLine($"Vehicle {vehicle.RegNumber} removed from spot {spot.ID + 1}");
+                            return true;
                         }
+                        else if (moveVehicle == true && i != moveFrom)
+                        {
+                            spot.Spots.Remove(vehicle);
+                            spot.UsedCapacity -= vehicle.Space;
+                            spot.Available += vehicle.Space;
 
-                        spot.Spots.Remove(vehicle);
-                        spot.UsedCapacity -= vehicle.Space;
-                        spot.Available += vehicle.Space;
-
-                        Console.WriteLine($"Vehicle {vehicle.RegNumber} removed from spot {spot.ID + 1}");
-                        return true;
+                            Console.WriteLine($"Vehicle {vehicle.RegNumber} removed from spot {spot.ID + 1}");
+                            return true;
+                        }
                     }
 
                     // Buss
                     else if (isBus && vehicle.RegNumber == regNumber)
                     {
-                        if (vehicle.RegNumber == regNumber)
+                        if (moveVehicle != true)
                         {
-                            for (int j = 0; j < 4; j++)
+                            if (vehicle.RegNumber == regNumber)
                             {
-                                garageList[i + j].Spots.Remove(vehicle);
-                                garageList[i + j].UsedCapacity = 0;
-                                garageList[i + j].Available = 4;
-                            }
+                                for (int j = 0; j < 4; j++)
+                                {
+                                    garageList[i + j].Spots.Remove(vehicle);
+                                    garageList[i + j].UsedCapacity = 0;
+                                    garageList[i + j].Available = 4;
+                                }
 
-                            if (moveVehicle != true)
-                            {
                                 AnsiConsole.Markup($"You have parked for [blue]{vehicle.CalculateParkingTime(DateTime.Now)}[/] ");
                                 AnsiConsole.Markup($"The total cost is [blue]{vehicle.CalculateParkingCost(DateTime.Now)}[/] ");
+
+                                Console.WriteLine($"Bus {vehicle.RegNumber} removed from spots {i + 1} to {i + 4}");
+                                return true;
                             }
-
-                            Console.WriteLine($"Bus {vehicle.RegNumber} removed from spots {i + 1} to {i + 4}");
-                            return true;
                         }
-
-                        if (i + 3 < garageList.Count &&
-                            garageList[i].Spots.Contains(vehicle) &&
-                            garageList[i + 1].Spots.Contains(vehicle) &&
-                            garageList[i + 2].Spots.Contains(vehicle) &&
-                            garageList[i + 3].Spots.Contains(vehicle))
+                        else if (moveVehicle == true && i != moveFrom)
                         {
-                            for (int j = 0; j < 4; j++)
+                            if (vehicle.RegNumber == regNumber)
                             {
-                                garageList[i + j].Spots.Remove(vehicle);
-                                garageList[i + j].ResetSpot();
-                            }
+                                for (int j = 0; j < 4; j++)
+                                {
+                                    garageList[i + j].Spots.Remove(vehicle);
+                                    garageList[i + j].UsedCapacity = 0;
+                                    garageList[i + j].Available = 4;
+                                }
+
                             Console.WriteLine($"Bus {vehicle.RegNumber} removed from spots {i + 1} to {i + 4}");
                             return true;
                         }
+
+                        //if (i + 3 < garageList.Count &&
+                        //    garageList[i].Spots.Contains(vehicle) &&
+                        //    garageList[i + 1].Spots.Contains(vehicle) &&
+                        //    garageList[i + 2].Spots.Contains(vehicle) &&
+                        //    garageList[i + 3].Spots.Contains(vehicle))
+                        //{
+                        //    for (int j = 0; j < 4; j++)
+                        //    {
+                        //        garageList[i + j].Spots.Remove(vehicle);
+                        //        garageList[i + j].ResetSpot();
+                        //    }
+                        //    Console.WriteLine($"Bus {vehicle.RegNumber} removed from spots {i + 1} to {i + 4}");
+                        //    return true;
+                        //}
                     }
                 }
             }
@@ -484,7 +516,7 @@ namespace Prague_Parking_2._0
         }*/
 
 
-        public bool MoveVehicle(string regNumber, bool selectSpace, int space, bool moveBus)
+        public bool MoveVehicle(string regNumber, bool selectSpace, int space, bool moveBus, bool v)
         {
             // Kontrollera om platsen finns i listan (exempelvis om space är ett giltigt index)
             if (space < 0 || space >= garageList.Count)
@@ -505,15 +537,21 @@ namespace Prague_Parking_2._0
                 return false; // Fordonet är inte parkerat någonstans
             }
 
-            var targetSpot = garageList[space]; // Om index är korrekt, hämta parkeringsplatsen
-            if (targetSpot.Occupied)
+            var targetSpot = garageList[space - 1]; // Om index är korrekt, hämta parkeringsplatsen
+            if (moveBus != true && vehicle.Space > targetSpot.Available || moveBus == true && targetSpot.Available != 4)
             {
                 return false; // Den nya platsen är upptagen
             }
 
+            //var targetSpot = garageList[space - 1]; // Om index är korrekt, hämta parkeringsplatsen
+            //if (targetSpot.Occupied)
+            //{
+            //    return false; // Den nya platsen är upptagen
+            //}
+
             // Flytta fordonet
-            RemoveVehicle(regNumber, moveBus, true);
             ParkVehicle(vehicle, true, space, moveBus);
+            RemoveVehicle(regNumber, moveBus, space, true);
             return true;
         }
 
