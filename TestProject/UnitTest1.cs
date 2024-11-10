@@ -6,6 +6,6 @@ namespace PragueParking.UnitTests
     [TestClass]
     public class GarageTest
     {
-        //NOTE: Wrong Test Project. Go to PragueParking.UnitTests for main MSTest branch
+        //Note: This project isn't used. Go to PragueParking.UnitTests to find the correct MSTest projct
     }
 }

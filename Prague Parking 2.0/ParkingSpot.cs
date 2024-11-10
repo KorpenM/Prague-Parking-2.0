@@ -7,15 +7,18 @@ namespace Prague_Parking_2._0
     public class ParkingSpot
     {
         public int ID { get; set; }
+        public int VehicleSpace { get; set; }
         public List<Vehicle> Spots { get; set; }
+        public Vehicle? ParkedVehicle { get; set; }
         public int SpotCapacity { get; set; } = 4;
         public int UsedCapacity { get; set; } = 0;
         public int Available { get; set; } = 4;
         public bool Occupied { get; set; } = false;
 
-        public bool CanPark { get; set; } = true;
-
-
+        public void SetVehicleSpace(Vehicle vehicle)
+        {
+            VehicleSpace = vehicle.Space;
+        }
 
         public ParkingSpot(int id)
         {
@@ -23,54 +26,39 @@ namespace Prague_Parking_2._0
             Spots = new List<Vehicle>();
         }
 
-        public void CheckAvailability(Vehicle vehicle)
+        public void ResetSpot()
         {
-            if (Available == 0 || vehicle.Space > Available)
-            {
-                CanPark = false;
-            }
-            else if (vehicle.Space <= Available)
-            {
-                CanPark = true;
-            }
-        }
-
-
-        public void Add(Vehicle vehicle)
-        {
-            if (vehicle.Space <= Available)
-            {
-                Spots.Add(vehicle);
-                UsedCapacity += vehicle.Space;
-                Available = SpotCapacity - UsedCapacity;
-            }
-            else
-            {
-                Console.WriteLine("No spots available.");
-            }
-        }
-
-        public void Remove(Vehicle vehicle)
-        {
-            Spots.Remove(vehicle);
-            UsedCapacity -= vehicle.Space;
+            // Återställ UsedCapacity för alla parkerade fordon på denna plats
+            UsedCapacity = 0;
             Available = SpotCapacity - UsedCapacity;
 
+            // Om det finns någon ledig plats, markera som icke-ockuperad
+            Occupied = Available != SpotCapacity;  // Om inte hela platsen är ledig, markera som ockuperad
         }
+
+
+        public void UpdateSpot(Vehicle vehicle)
+
+        {
+            // Om det finns flera parkeringsplatser för denna fordonstyp (t.ex. en buss)
+            UsedCapacity += vehicle.Space;
+            Available = SpotCapacity - UsedCapacity;
+
+            // Om hela platsen är ockuperad, sätt Occupied till true
+            Occupied = UsedCapacity >= SpotCapacity;
+        }
+
 
         public override string ToString()
         {
-            string[] info = [];
+            string info = "";
 
             foreach (Vehicle vehicle in Spots)
             {
-                string s = vehicle.RegNumber + " " + vehicle.Space + " " + vehicle.GetType().Name;
-                info.Append(s);
+                return info = vehicle.RegNumber + " " + vehicle.Space + " " + vehicle.GetType().Name;
             }
 
-            return info.ToString();
-
-
+            return info;
         }
     }
 }

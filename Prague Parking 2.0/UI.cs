@@ -17,6 +17,7 @@ namespace Prague_Parking_2._0
         public UI(Garage garage)
         {
             garage.LoadParkingData();
+            garage.InitializeParkingData();
 
             do
             {
@@ -58,18 +59,23 @@ namespace Prague_Parking_2._0
                 {
                     case "Park Vehicle":
                         AddVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Retrieve Vehicle":
                         RemoveVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Move Vehicle":
                         MoveVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Search Vehicle":
                         SearchVehicle(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Show All Registered Vehicles":
                         ShowRegisteredVehicles(garage);
+                        garage.SaveParkingData();
                         break;
                     case "Edit Parking Settings":
                         EditSettings(garage);
@@ -81,6 +87,7 @@ namespace Prague_Parking_2._0
                         break;
                     case "Show Parking Data":
                         garage.ShowParkingData();
+                        garage.SaveParkingData();
                         break;
                     case "Add New Vehicle Type":
                         garage.AddNewVehicleType();
@@ -88,6 +95,7 @@ namespace Prague_Parking_2._0
                         break;
                     case "Exit":
                         Console.Write("\nExiting program...");
+                        garage.SaveParkingData();
                         break;
                     default:
                         Console.Write("\nInvalid choice. Please try again...");
@@ -154,6 +162,7 @@ namespace Prague_Parking_2._0
             }
         }
 
+
         private static void ShowSettings(Garage garage)
         {
             Console.Clear();
@@ -169,7 +178,7 @@ namespace Prague_Parking_2._0
 
                 AnsiConsole.Markup($"[bold cyan]{formattedJson}[/]");
 
-                AnsiConsole.Markup(formattedJson);
+                //AnsiConsole.Markup(formattedJson);
 
             }
             else
@@ -201,7 +210,7 @@ namespace Prague_Parking_2._0
 
             Console.Clear();
             string regNumber = AnsiConsole.Ask<string>("Type in the registration plate of the vehicle in question: \n");
-            Vehicle? vehicle = null;
+            Vehicle vehicle = null;
             bool parkingBus = false;
 
             switch (chosenVehicleType)
@@ -240,12 +249,13 @@ namespace Prague_Parking_2._0
             Console.ReadKey();
         }
 
+
         private static void RemoveVehicle(Garage garage)
         {
             Console.Clear();
             string regNumber = AnsiConsole.Ask<string>("Enter the registration plate of the vehicle you wish to remove: ");
 
-            Console.Clear();
+            // Console.Clear();
             // Ask the user to confirm
             bool removeBus = AnsiConsole.Prompt(
                 new TextPrompt<bool>("Is the vehicle you're reclaiming a bus?")
@@ -254,28 +264,25 @@ namespace Prague_Parking_2._0
                     .DefaultValue(false)
                     .WithConverter(choice => choice ? "y" : "n"));
             // Echo the confirmation back to the terminal
-            Console.WriteLine(removeBus ? "Confirmed" : "Declined");
+            Console.WriteLine(removeBus ? "Bus: confirmed" : "Other vehicle");
 
-            if (regNumber != null)
+            if (garage.RemoveVehicle(regNumber, removeBus, 0, false))
             {
-                Vehicle? vehicle = garage.FindVehicle(regNumber);
-                Console.WriteLine($"Total cost for parking: {vehicle?.CalculateParkingCost(DateTime.Now)}");
-                Console.WriteLine($"TIme parked: {vehicle? .CalculateParkingTime(DateTime.Now)}");
-                garage.RemoveVehicle(regNumber, removeBus);
-                //AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] has been removed");
+                AnsiConsole.Markup($"Vehicle with registration number [blue]{regNumber}[/] has been removed");
             }
             else
             {
                 Console.WriteLine("Vehicle not found");
             }
-            
             Console.Write("Press random key to continue...");
             Console.ReadKey();
         }
 
+
         private static void MoveVehicle(Garage garage)
         {
             Console.Clear();
+
             string regNumber = AnsiConsole.Ask<string>("Enter the registration number of the vehicle you want to move: ");
 
             bool moveBus = AnsiConsole.Prompt(
@@ -284,28 +291,39 @@ namespace Prague_Parking_2._0
                     .AddChoice(false)
                     .DefaultValue(false)
                     .WithConverter(choice => choice ? "y" : "n"));
-            Console.WriteLine(moveBus ? "Confirmed" : "Declined");
 
-            if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 0 || toSpot > garage.garageList.Count)
+            Console.WriteLine(moveBus ? "Bus confirmed" : "Other vehicle confirmed");
+
+            if (!int.TryParse(AnsiConsole.Ask<string>("Enter the parking spot to move to: "), out int toSpot) || toSpot < 1)
             {
-                Console.WriteLine("Invalid spot number");
-                Console.Write("Press random key to continue...");
+                Console.WriteLine("Invalid spot number. Please enter a valid spot number.");
+                Console.Write("Press any key to continue...");
+                Console.ReadKey();
+                return;
+            }
+            else if (moveBus == true && toSpot > 46)
+            {
+                Console.WriteLine("Invalid spot number for buses. Please enter a valid spot number.");
+                Console.Write("Press any key to continue...");
                 Console.ReadKey();
                 return;
             }
 
-            if (garage.MoveVehicle(regNumber, true, toSpot - 1, moveBus))
+            bool isMoveSuccessful = garage.MoveVehicle(regNumber, true, toSpot, moveBus, false);
+
+            if (isMoveSuccessful)
             {
-                //Console.WriteLine("Vehicle moved successfully");
+                AnsiConsole.Markup($"[green]Vehicle with registration number {regNumber} has been moved successfully.[/]");
             }
             else
             {
-                Console.WriteLine("Failed to move vehicle. Check if it exists and if spots are valid");
+                AnsiConsole.Markup($"[red]Failed to move vehicle with registration number {regNumber}. Check if it exists and if spots are valid.[/]");
             }
 
-            Console.Write("\nPress random key to continue...");
+            Console.Write("\nPress any key to continue...");
             Console.ReadKey();
         }
+
 
         private static void SearchVehicle(Garage garage)
         {

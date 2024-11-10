@@ -11,17 +11,17 @@ namespace PragueParking.UnitTests
         {
             //Arrange
             var garage = new Garage();
-            
+
             string registrationPlate = "FTD123";
             Car myCar = new Car(registrationPlate);
-            
+
             bool foundParkedCar = false;
 
             //Act
             garage.ParkVehicle(myCar, false, 0, false);
-            
+
             var result = garage.FindVehicle(registrationPlate);
-            
+
             if (result != null)
             {
                 foundParkedCar = true;
