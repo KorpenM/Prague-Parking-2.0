@@ -408,20 +408,20 @@ namespace Prague_Parking_2._0
                             return true;
                         }
 
-                        //if (i + 3 < garageList.Count &&
-                        //    garageList[i].Spots.Contains(vehicle) &&
-                        //    garageList[i + 1].Spots.Contains(vehicle) &&
-                        //    garageList[i + 2].Spots.Contains(vehicle) &&
-                        //    garageList[i + 3].Spots.Contains(vehicle))
-                        //{
-                        //    for (int j = 0; j < 4; j++)
-                        //    {
-                        //        garageList[i + j].Spots.Remove(vehicle);
-                        //        garageList[i + j].ResetSpot();
-                        //    }
-                        //    Console.WriteLine($"Bus {vehicle.RegNumber} removed from spots {i + 1} to {i + 4}");
-                        //    return true;
-                        //}
+                        if (i + 3 < garageList.Count &&
+                            garageList[i].Spots.Contains(vehicle) &&
+                            garageList[i + 1].Spots.Contains(vehicle) &&
+                            garageList[i + 2].Spots.Contains(vehicle) &&
+                            garageList[i + 3].Spots.Contains(vehicle))
+                        {
+                            for (int j = 0; j < 4; j++)
+                            {
+                                garageList[i + j].Spots.Remove(vehicle);
+                                garageList[i + j].ResetSpot();
+                            }
+                            Console.WriteLine($"Bus {vehicle.RegNumber} removed from spots {i + 1} to {i + 4}");
+                            return true;
+                        }
                     }
                 }
             }
